@@ -69,6 +69,15 @@
       radial-gradient(circle at 85% 90%, rgba(95,217,196,0.05) 0%, transparent 50%),
       var(--bg);
   }
+  #starfield {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
   .grain {
     position: fixed;
     inset: 0;
@@ -80,7 +89,7 @@
 
   /* Welcome screen ambient waves */
   .wave-field {
-    position: absolute;
+    position: fixed;
     inset: 0;
     z-index: 0;
     overflow: hidden;
@@ -123,14 +132,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    /* justify-content removed: when content is taller than the viewport,
+       centering clips the top/bottom with no way to reach it. Each screen
+       centers its own content with margin/padding instead, and the screen
+       itself scrolls if content overflows. */
     padding: 2rem 1.5rem;
+    padding-top: calc(2rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
     opacity: 0;
     visibility: hidden;
     transform: translateY(14px);
     transition: opacity 0.6s cubic-bezier(.22,.61,.36,1), transform 0.6s cubic-bezier(.22,.61,.36,1);
     pointer-events: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(232,201,122,0.25) transparent;
   }
+  .screen::-webkit-scrollbar { width: 5px; }
+  .screen::-webkit-scrollbar-track { background: transparent; }
+  .screen::-webkit-scrollbar-thumb { background: rgba(232,201,122,0.2); border-radius: 4px; }
   .screen.active {
     opacity: 1;
     visibility: visible;
@@ -138,12 +160,17 @@
     pointer-events: auto;
   }
 
+  /* Screens whose content is shorter than the viewport still look centered,
+     via auto margins on the inner wrapper, while taller content simply
+     flows from the top and scrolls — never clipped, never hidden. */
   .screen-inner {
     width: 100%;
     max-width: 30rem;
     display: flex;
     flex-direction: column;
     align-items: center;
+    margin: auto 0;
+    flex-shrink: 0;
   }
 
   /* Step trail — shown on screens 2/3, tiny, quiet */
@@ -164,13 +191,15 @@
   .step-dot.current { background: var(--gold); width: 16px; border-radius: 3px; }
 
   .back-btn {
-    position: absolute;
-    top: 1.75rem;
+    position: fixed;
+    top: calc(1.75rem + env(safe-area-inset-top, 0px));
     left: 1.75rem;
     width: 2.25rem;
     height: 2.25rem;
     border-radius: 50%;
-    background: transparent;
+    background: rgba(8,9,13,0.55);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     border: 1px solid var(--line-soft);
     color: var(--text-dim);
     display: flex;
@@ -178,7 +207,7 @@
     justify-content: center;
     cursor: pointer;
     transition: border-color 0.25s, color 0.25s;
-    z-index: 5;
+    z-index: 20;
   }
   .back-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
   .back-btn svg { width: 16px; height: 16px; }
@@ -186,12 +215,11 @@
 
   /* ---------------- Footer brand mark ---------------- */
   .brand-mark {
-    position: absolute;
-    bottom: 1.25rem;
-    left: 0;
-    right: 0;
+    flex-shrink: 0;
+    width: 100%;
     text-align: center;
-    z-index: 5;
+    margin-top: 2.5rem;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     font-size: 0.625rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -396,10 +424,13 @@
   }
   .custom-fields {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0.6rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.6rem 0.5rem;
   }
-  .custom-field { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+  @media (min-width: 420px) {
+    .custom-fields { grid-template-columns: repeat(4, 1fr); }
+  }
+  .custom-field { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; width: 100%; }
   .custom-field label {
     font-size: 0.62rem;
     color: var(--text-faint);
@@ -413,9 +444,12 @@
     border: 1px solid var(--line-soft);
     border-radius: 0.7rem;
     overflow: hidden;
+    width: 100%;
+    max-width: 7.5rem;
   }
   .stepper button {
-    width: 1.7rem;
+    flex: 0 0 1.6rem;
+    width: 1.6rem;
     height: 2.1rem;
     background: transparent;
     border: none;
@@ -427,7 +461,9 @@
   }
   .stepper button:hover { color: var(--gold); background: rgba(232,201,122,0.06); }
   .stepper input {
-    width: 1.9rem;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
     height: 2.1rem;
     background: transparent;
     border: none;
@@ -507,10 +543,12 @@
      ===================================================== */
   #screen-practice .screen-inner {
     max-width: 26rem;
-    height: 100%;
+    min-height: calc(100% - 1.5rem);
     justify-content: space-between;
+    gap: 1.5rem;
     padding-top: 1rem;
     padding-bottom: 0.5rem;
+    margin: 0 0 auto 0;
   }
 
   .practice-top {
@@ -528,14 +566,15 @@
 
   .practice-stage {
     position: relative;
-    width: 17rem;
-    height: 17rem;
+    width: min(60vw, 40vh, 19rem);
+    height: min(60vw, 40vh, 19rem);
+    min-width: 10rem;
+    min-height: 10rem;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
   }
-  @media (min-width: 420px) { .practice-stage { width: 19rem; height: 19rem; } }
 
   .ring {
     position: absolute;
@@ -822,11 +861,48 @@
   @media (prefers-reduced-motion: reduce) {
     .w-ring-1, .w-ring-2, .w-ring-3, .w-core, .idle-pulse { animation: none; }
   }
+
+  /* ---------------- Small / short viewport compaction ----------------
+     Tightens vertical rhythm so more fits above the fold on phones.
+     Nothing here removes content — .screen still scrolls if needed,
+     this just reduces how often scrolling is necessary. */
+  @media (max-width: 480px) {
+    .screen { padding: 1.25rem 1.1rem; padding-top: calc(3.25rem + env(safe-area-inset-top, 0px)); }
+    .step-trail { margin-bottom: 1.4rem; }
+    .select-heading { font-size: 1.4rem; }
+    .select-sub { margin-bottom: 1.4rem; font-size: 0.74rem; }
+    .ratio-list { gap: 0.55rem; margin-bottom: 1.2rem; }
+    .ratio-card { padding: 0.8rem 1rem; }
+    .custom-panel { margin-bottom: 1.2rem; padding: 0.9rem 1rem 1rem; }
+    .duration-grid { gap: 0.55rem; margin-bottom: 1.4rem; }
+    .duration-card { padding: 1.1rem 0.8rem; }
+    .app-title { font-size: 2.15rem; }
+    .welcome-ring-stage { width: 10.5rem; height: 10.5rem; margin-bottom: 1.6rem; }
+    .app-subtitle { margin-bottom: 2rem; }
+  }
+
+  @media (max-height: 700px) {
+    .welcome-ring-stage { margin-bottom: 1.4rem; }
+    .app-subtitle { margin-bottom: 1.6rem; }
+    .step-trail { margin-bottom: 1.25rem; }
+    .select-sub { margin-bottom: 1.25rem; }
+    #screen-practice .screen-inner { gap: 1rem; }
+  }
+
+  /* ---------------- Desktop / wide viewport ----------------
+     Keep the experience from feeling like a stretched mobile layout:
+     cap line lengths and give breathing room on large screens. */
+  @media (min-width: 900px) {
+    .screen-inner { max-width: 32rem; }
+    #screen-practice .screen-inner { max-width: 28rem; }
+    .ratio-card, .duration-card { padding-left: 1.5rem; padding-right: 1.5rem; }
+  }
 </style>
 </head>
 <body>
 
 <div class="backdrop"></div>
+<canvas id="starfield"></canvas>
 <div class="grain"></div>
 
 <!-- ===================== SCREEN 1: WELCOME ===================== -->
@@ -1075,6 +1151,87 @@
   var ambientAudio = new Audio('freesound_community-binaural-beats_delta_440_440-5hz-48565.mp3');
   ambientAudio.loop = true;
   var cueAudio = new Audio('freesound_community-metronome-85688.mp3');
+
+  /* ========================================================
+     STARFIELD — ambient drifting stars behind every screen
+     ======================================================== */
+  (function initStarfield() {
+    var canvas = document.getElementById('starfield');
+    if (!canvas || !canvas.getContext) return;
+    var ctx = canvas.getContext('2d');
+    var stars = [];
+    var w = 0, h = 0, dpr = 1;
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var starRafId = null;
+
+    var STAR_COLORS = ['232,201,122', '245,241,232', '95,217,196'];
+
+    function buildStars() {
+      var area = w * h;
+      var count = Math.max(50, Math.min(160, Math.round(area / 9000)));
+      stars = [];
+      for (var i = 0; i < count; i++) {
+        stars.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          r: Math.random() * 1.3 + 0.3,
+          baseAlpha: Math.random() * 0.5 + 0.25,
+          twinkleSpeed: Math.random() * 0.6 + 0.2,
+          twinklePhase: Math.random() * Math.PI * 2,
+          driftX: (Math.random() - 0.5) * 0.012,
+          driftY: (Math.random() - 0.5) * 0.006,
+          color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)]
+        });
+      }
+    }
+
+    function resize() {
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+      canvas.style.width = w + 'px';
+      canvas.style.height = h + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      buildStars();
+    }
+
+    function draw(t) {
+      ctx.clearRect(0, 0, w, h);
+      var time = t / 1000;
+      for (var i = 0; i < stars.length; i++) {
+        var s = stars[i];
+        if (!reduceMotion) {
+          s.x += s.driftX;
+          s.y += s.driftY;
+          if (s.x < -2) s.x = w + 2;
+          if (s.x > w + 2) s.x = -2;
+          if (s.y < -2) s.y = h + 2;
+          if (s.y > h + 2) s.y = -2;
+        }
+        var twinkle = reduceMotion ? s.baseAlpha : (s.baseAlpha + Math.sin(time * s.twinkleSpeed + s.twinklePhase) * 0.22);
+        twinkle = Math.max(0.06, Math.min(0.85, twinkle));
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(' + s.color + ',' + twinkle.toFixed(3) + ')';
+        ctx.fill();
+      }
+      starRafId = requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', resize);
+    starRafId = requestAnimationFrame(draw);
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        cancelAnimationFrame(starRafId);
+      } else {
+        starRafId = requestAnimationFrame(draw);
+      }
+    });
+  })();
 
   /* ========================================================
      DOM REFS
@@ -1446,6 +1603,14 @@
       : 100;
     el.progressFill.style.width = progressPercent + '%';
     el.progressTrack.style.display = state.duration > 0 ? 'block' : 'none';
+
+    // Live in-circle countdown: this must update every frame, not just on
+    // phase change, otherwise the number freezes at its starting value
+    // (e.g. "Inhale / 4s" staying on screen for the whole phase).
+    var ratio = getActiveRatio();
+    if (state.isRunning && ratio[state.currentPhase] > 0) {
+      el.phaseTime.textContent = state.phaseTimeLeft + 's';
+    }
   }
 
   function renderPracticeVisuals() {
@@ -1499,6 +1664,7 @@
       el.phaseText.style.display = 'none';
     }
   }
+
 
   function renderPlayButton() {
     if (state.isRunning) {
