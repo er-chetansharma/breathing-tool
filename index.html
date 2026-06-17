@@ -2,357 +2,511 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Alpha Harmonizer | Premium Breathing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Alpha Harmonizer | Consciousversity</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 
 <style>
   :root {
-    --dark: #0f111a;
-    --accent: #2dd4bf;
+    --bg:        #08090d;
+    --panel:     #0f121a;
+    --panel-2:   #131725;
+    --line:      rgba(232, 201, 122, 0.08);
+    --line-soft: rgba(255, 255, 255, 0.06);
+    --gold:      #e8c97a;
+    --gold-soft: rgba(232, 201, 122, 0.16);
+    --teal:      #5fd9c4;
+    --violet:    #a78bfa;
+    --amber:     #f3b65f;
+    --text:      #f5f1e8;
+    --text-dim:  #9a9588;
+    --text-faint:#5f5b52;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
   html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
   }
 
   body {
-    background-color: var(--dark);
-    color: #f8fafc;
-    overflow-x: hidden;
-    background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f111a 70%);
-    min-height: 100vh;
-    font-family: 'Outfit', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
     -webkit-font-smoothing: antialiased;
-  }
-
-  .font-serif { font-family: 'Playfair Display', serif; }
-
-  .app {
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    max-width: 64rem; /* max-w-5xl */
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
+    overflow: hidden;
+    height: 100vh;
+    height: 100dvh;
     position: relative;
   }
-  @media (min-width: 640px) { .app { padding: 1.5rem 1.5rem; } }
-  @media (min-width: 768px) { .app { padding: 2rem 1.5rem; } }
 
-  /* Glassmorphism Panels */
-  .glass-panel {
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  button {
+    font-family: inherit;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
-  /* Smooth Breathing Animations */
-  .hero-circle {
-    transition-property: transform, background-color, box-shadow;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, background-color, box-shadow;
+  button:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--gold);
+    outline-offset: 2px;
   }
 
-  .pulse-ring {
-    transition-property: transform, opacity, border-color;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-    will-change: transform, opacity;
+  .serif { font-family: 'Cormorant Garamond', serif; }
+
+  /* Ambient backdrop — shared across all screens */
+  .backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background:
+      radial-gradient(circle at 50% 8%, rgba(232,201,122,0.07) 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, rgba(95,217,196,0.05) 0%, transparent 50%),
+      var(--bg);
+  }
+  .grain {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    opacity: 0.025;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  @keyframes breatheIdle {
-    0% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
-    50% { transform: scale(0.65); box-shadow: 0 0 50px rgba(45, 212, 191, 0.2); opacity: 0.8; }
-    100% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
-  }
-  .idle-pulse {
-    animation: breatheIdle 8s ease-in-out infinite;
-    background-color: rgba(45, 212, 191, 0.15);
-    border: 1px solid rgba(45, 212, 191, 0.3);
-  }
-
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-
-  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-  input[type=number] { -moz-appearance: textfield; }
-
-  input[type=range] {
-    -webkit-appearance: none;
-    appearance: none;
-    height: 4px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 2px;
-    outline: none;
-    cursor: pointer;
-  }
-  input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #2dd4bf;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(45,212,191,0.5);
-  }
-  input[type=range]::-moz-range-thumb {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    background: #2dd4bf;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(45,212,191,0.5);
-  }
-
-  /* ---------- Header ---------- */
-  header.app-header {
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  @media (min-width: 768px) { header.app-header { margin-bottom: 2.5rem; } }
-  header.app-header h1 {
-    font-size: 1.875rem;
-    line-height: 1.2;
-    background: linear-gradient(to right, #99f6e4, #2dd4bf);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    letter-spacing: 0.02em;
-    margin: 0 0 0.25rem 0;
-  }
-  @media (min-width: 768px) { header.app-header h1 { font-size: 2.25rem; } }
-  header.app-header p {
-    color: #9ca3af;
-    font-size: 0.75rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    font-weight: 300;
-    margin: 0;
-  }
-  @media (min-width: 768px) { header.app-header p { font-size: 0.875rem; } }
-
-  /* ---------- Finished overlay ---------- */
-  .finished-overlay {
+  /* ---------------- Screen shell ---------------- */
+  .screen {
     position: absolute;
     inset: 0;
-    z-index: 50;
-    display: none;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: rgba(15, 17, 26, 0.8);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    padding: 2rem 1.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(14px);
+    transition: opacity 0.6s cubic-bezier(.22,.61,.36,1), transform 0.6s cubic-bezier(.22,.61,.36,1);
+    pointer-events: none;
   }
-  .finished-overlay.show { display: flex; }
-  .finished-card {
-    padding: 2rem;
-    border-radius: 1.5rem;
-    text-align: center;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    margin: 0 1rem;
-    max-width: 28rem;
+  .screen.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .screen-inner {
     width: 100%;
+    max-width: 30rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  @media (min-width: 768px) { .finished-card { padding: 3rem; } }
-  .finished-card h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.875rem;
-    color: var(--accent);
-    margin: 0 0 0.75rem 0;
+
+  /* Step trail — shown on screens 2/3, tiny, quiet */
+  .step-trail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 2.25rem;
   }
-  .finished-card p {
-    color: #d1d5db;
+  .step-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    transition: background 0.4s, width 0.4s;
+  }
+  .step-dot.done { background: var(--gold); }
+  .step-dot.current { background: var(--gold); width: 16px; border-radius: 3px; }
+
+  .back-btn {
+    position: absolute;
+    top: 1.75rem;
+    left: 1.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: transparent;
+    border: 1px solid var(--line-soft);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.25s, color 0.25s;
+    z-index: 5;
+  }
+  .back-btn:hover { border-color: var(--gold-soft); color: var(--gold); }
+  .back-btn svg { width: 16px; height: 16px; }
+  .back-btn.hidden { display: none; }
+
+  /* ---------------- Footer brand mark ---------------- */
+  .brand-mark {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 0;
+    right: 0;
+    text-align: center;
+    z-index: 5;
+    font-size: 0.625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 400;
+  }
+  .brand-mark span { color: var(--gold); opacity: 0.85; }
+
+  /* =====================================================
+     SCREEN 1 — WELCOME
+     ===================================================== */
+  #screen-welcome .screen-inner { align-items: center; text-align: center; }
+
+  .welcome-ring-stage {
+    position: relative;
+    width: 13rem;
+    height: 13rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 2.5rem;
+  }
+  @media (min-width: 480px) { .welcome-ring-stage { width: 15rem; height: 15rem; } }
+
+  .w-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 1px solid var(--gold-soft);
+  }
+  .w-ring-1 { animation: wBreathe 7s ease-in-out infinite; }
+  .w-ring-2 { inset: 1.4rem; animation: wBreathe 7s ease-in-out infinite; animation-delay: -2.3s; border-color: rgba(95,217,196,0.14); }
+  .w-ring-3 { inset: 2.8rem; animation: wBreathe 7s ease-in-out infinite; animation-delay: -4.6s; }
+
+  @keyframes wBreathe {
+    0%, 100% { transform: scale(0.94); opacity: 0.5; }
+    50% { transform: scale(1.04); opacity: 1; }
+  }
+
+  .w-core {
+    position: absolute;
+    inset: 3.6rem;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(232,201,122,0.22), rgba(95,217,196,0.06) 70%, transparent 100%);
+    animation: wCore 7s ease-in-out infinite;
+  }
+  @keyframes wCore {
+    0%, 100% { transform: scale(0.92); }
+    50% { transform: scale(1.08); }
+  }
+
+  .w-label {
+    position: absolute;
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    animation: wLabelFade 7s ease-in-out infinite;
+  }
+  @keyframes wLabelFade {
+    0%, 45% { opacity: 0.4; content: ''; }
+    50%, 95% { opacity: 0.85; }
+  }
+
+  .app-title {
+    font-size: 2.6rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.6rem 0;
+    color: var(--text);
+  }
+  @media (min-width: 480px) { .app-title { font-size: 3.1rem; } }
+
+  .app-subtitle {
+    font-size: 0.7rem;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 400;
+    margin: 0 0 3rem 0;
+  }
+
+  .begin-btn {
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    padding: 0.9rem 2.6rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.35s, color 0.35s, box-shadow 0.35s;
+  }
+  .begin-btn:hover {
+    background: var(--gold);
+    color: #14110a;
+    box-shadow: 0 0 36px rgba(232,201,122,0.25);
+  }
+
+  .welcome-tagline {
+    margin-top: 1.75rem;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    max-width: 22rem;
+  }
+
+  /* =====================================================
+     SCREEN 2 & 3 — SELECTION SCREENS
+     ===================================================== */
+  .select-heading {
+    font-size: 1.7rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 0 0 0.4rem 0;
+  }
+  .select-sub {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    text-align: center;
+    margin: 0 0 2.25rem 0;
+    font-weight: 300;
+    max-width: 24rem;
+  }
+
+  .ratio-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .ratio-card {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 1.1rem;
+    padding: 1rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s, transform 0.15s;
+    text-align: left;
+  }
+  .ratio-card:hover { border-color: var(--gold-soft); background: var(--panel-2); }
+  .ratio-card:active { transform: scale(0.99); }
+  .ratio-card.active {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(232,201,122,0.07), rgba(232,201,122,0.02));
+    box-shadow: 0 0 0 1px rgba(232,201,122,0.15) inset, 0 8px 24px rgba(232,201,122,0.06);
+  }
+
+  .ratio-card-left { display: flex; flex-direction: column; gap: 0.2rem; }
+  .ratio-card-name {
     font-size: 1rem;
-    margin: 0 0 2rem 0;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .ratio-card-desc {
+    font-size: 0.72rem;
+    color: var(--text-dim);
     font-weight: 300;
   }
-  @media (min-width: 768px) { .finished-card p { font-size: 1.125rem; } }
-  .finished-card .em { color: #fff; font-weight: 500; }
-  .finished-card button {
-    background: rgba(45, 212, 191, 0.1);
-    border: 1px solid rgba(45, 212, 191, 0.3);
-    color: var(--accent);
-    padding: 0.75rem 2rem;
-    border-radius: 9999px;
-    transition: all 0.3s;
-    letter-spacing: 0.02em;
-    font-family: inherit;
+  .ratio-card-figure {
+    font-family: 'Cormorant Garamond', serif;
     font-size: 1rem;
-    cursor: pointer;
+    letter-spacing: 0.08em;
+    color: var(--text-faint);
+    transition: color 0.25s;
+    white-space: nowrap;
   }
-  .finished-card button:hover {
-    background: var(--accent);
-    color: #fff;
-  }
+  .ratio-card.active .ratio-card-figure { color: var(--gold); }
 
-  /* ---------- Top grid ---------- */
-  .top-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
-    position: relative;
-    z-index: 10;
-  }
-  @media (min-width: 768px) {
-    .top-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
-  }
-
-  .panel {
-    border-radius: 1.5rem;
-    padding: 1.25rem;
-    display: flex;
+  .custom-panel {
+    width: 100%;
+    background: var(--panel);
+    border: 1px solid var(--gold-soft);
+    border-radius: 1.1rem;
+    padding: 1.1rem 1.25rem 1.25rem;
+    margin-top: -0.1rem;
+    margin-bottom: 1.75rem;
+    display: none;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 0.85rem;
+    animation: revealDown 0.35s cubic-bezier(.22,.61,.36,1);
   }
-  @media (min-width: 768px) { .panel { padding: 1.5rem; } }
-
-  .panel-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
+  .custom-panel.show { display: flex; }
+  @keyframes revealDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
-  .panel-label {
-    font-size: 11px;
+  .custom-panel-label {
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: #9ca3af;
-    letter-spacing: 0.15em;
-    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 0.15rem;
   }
-  .ratio-display {
-    color: var(--accent);
-    font-family: 'Playfair Display', serif;
-    font-size: 0.875rem;
-    letter-spacing: 0.15em;
-  }
-
-  .chip-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
-  }
-  .chip {
-    padding: 0.375rem 0.75rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    transition: all 0.3s;
-    background: rgba(255,255,255,0.05);
-    color: #d1d5db;
-    border: none;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  @media (min-width: 768px) { .chip { padding: 0.5rem 1rem; font-size: 0.875rem; } }
-  .chip:hover { background: rgba(255,255,255,0.1); }
-  .chip.active {
-    background: var(--accent);
-    color: var(--dark);
-    font-weight: 500;
-    box-shadow: 0 0 15px rgba(45,212,191,0.3);
-  }
-
-  .custom-grid {
+  .custom-fields {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 0.5rem;
-    margin-top: 1rem;
-    background: rgba(0,0,0,0.2);
-    padding: 0.75rem;
-    border-radius: 1rem;
-    border: 1px solid rgba(255,255,255,0.05);
+    gap: 0.6rem;
   }
-  .custom-grid .field {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .custom-grid label {
-    font-size: 9px;
-    color: #6b7280;
+  .custom-field { display: flex; flex-direction: column; align-items: center; gap: 0.4rem; }
+  .custom-field label {
+    font-size: 0.62rem;
+    color: var(--text-faint);
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
     letter-spacing: 0.1em;
   }
-  .custom-grid input {
-    width: 2.5rem;
-    height: 2.5rem;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    text-align: center;
-    border-radius: 0.75rem;
-    color: #fff;
-    font-family: inherit;
-    font-size: 1rem;
-  }
-  @media (min-width: 768px) { .custom-grid input { width: 3rem; height: 3rem; } }
-  .custom-grid input:focus { outline: none; border-color: var(--accent); }
-
-  .stats-row {
-    margin-top: 1.5rem;
+  .stepper {
     display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 1rem;
+    align-items: center;
+    background: rgba(0,0,0,0.25);
+    border: 1px solid var(--line-soft);
+    border-radius: 0.7rem;
+    overflow: hidden;
   }
-  .stats-row .stat-label {
-    font-size: 9px;
-    text-transform: uppercase;
-    color: #6b7280;
-    letter-spacing: 0.15em;
-    margin-bottom: 0.25rem;
+  .stepper button {
+    width: 1.7rem;
+    height: 2.1rem;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s, background 0.2s;
   }
-  .stats-row .stat-value {
-    font-size: 1.5rem;
-    font-family: 'Playfair Display', serif;
-    color: #fff;
+  .stepper button:hover { color: var(--gold); background: rgba(232,201,122,0.06); }
+  .stepper input {
+    width: 1.9rem;
+    height: 2.1rem;
+    background: transparent;
+    border: none;
+    border-left: 1px solid var(--line-soft);
+    border-right: 1px solid var(--line-soft);
+    text-align: center;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.9rem;
+    -moz-appearance: textfield;
   }
-  @media (min-width: 768px) { .stats-row .stat-value { font-size: 1.875rem; } }
-  .stats-row .stat-value.accent { color: var(--accent); }
-  .stats-row .right { text-align: right; }
+  .stepper input::-webkit-inner-spin-button,
+  .stepper input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper input:focus { outline: none; }
 
-  /* ---------- Hero circle ---------- */
-  .hero-wrap {
-    flex: 1;
+  /* Duration screen */
+  .duration-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    margin-bottom: 2rem;
+  }
+  .duration-card {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 1.1rem;
+    padding: 1.4rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 1.5rem 0;
-    position: relative;
-    overflow: hidden;
+    gap: 0.3rem;
+    cursor: pointer;
+    transition: border-color 0.25s, background 0.25s, transform 0.15s;
   }
-  @media (min-width: 768px) { .hero-wrap { padding: 3rem 0; } }
+  .duration-card:hover { border-color: var(--gold-soft); background: var(--panel-2); }
+  .duration-card:active { transform: scale(0.98); }
+  .duration-card.active {
+    border-color: var(--gold);
+    background: linear-gradient(180deg, rgba(232,201,122,0.07), rgba(232,201,122,0.02));
+    box-shadow: 0 0 0 1px rgba(232,201,122,0.15) inset, 0 8px 24px rgba(232,201,122,0.06);
+  }
+  .duration-card-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    color: var(--text);
+    transition: color 0.25s;
+  }
+  .duration-card.active .duration-card-value { color: var(--gold); }
+  .duration-card-unit {
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
 
-  .hero-stage {
+  .continue-btn {
+    width: 100%;
+    background: var(--gold);
+    color: #14110a;
+    border: none;
+    padding: 1rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: box-shadow 0.3s, transform 0.15s, opacity 0.3s;
+  }
+  .continue-btn:hover { box-shadow: 0 0 36px rgba(232,201,122,0.3); }
+  .continue-btn:active { transform: scale(0.99); }
+
+  /* =====================================================
+     SCREEN 4 — PRACTICE
+     ===================================================== */
+  #screen-practice .screen-inner {
+    max-width: 26rem;
+    height: 100%;
+    justify-content: space-between;
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .practice-top {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0.25rem;
+  }
+  .practice-meta { display: flex; flex-direction: column; gap: 0.1rem; }
+  .practice-meta .label { font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-faint); }
+  .practice-meta .value { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; color: var(--text); }
+  .practice-meta.right { text-align: right; align-items: flex-end; }
+  .practice-meta .value.accent { color: var(--teal); }
+
+  .practice-stage {
     position: relative;
-    width: 16rem;
-    height: 16rem;
+    width: 17rem;
+    height: 17rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
   }
-  @media (min-width: 480px) { .hero-stage { width: 18rem; height: 18rem; } }
-  @media (min-width: 768px) { .hero-stage { width: 24rem; height: 24rem; } }
+  @media (min-width: 420px) { .practice-stage { width: 19rem; height: 19rem; } }
 
   .ring {
     position: absolute;
     inset: 0;
     border-radius: 50%;
     pointer-events: none;
+    transition-property: transform, opacity, border-color, background;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
   .ring-outer { transform: scale(0.8); opacity: 0; }
   .ring-inner { border: 1px solid transparent; transform: scale(0.7); opacity: 0; }
@@ -364,393 +518,490 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: #0c0e14;
     width: 100%;
     height: 100%;
     transform: scale(1);
+    transition-property: transform, background-color, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .hero-text {
-    text-align: center;
-    transition: opacity 0.3s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+  @keyframes breatheIdle {
+    0%, 100% { transform: scale(0.58); box-shadow: 0 0 40px rgba(232,201,122,0.08); opacity: 0.55; }
+    50% { transform: scale(0.63); box-shadow: 0 0 60px rgba(232,201,122,0.16); opacity: 0.85; }
   }
+  .idle-pulse {
+    animation: breatheIdle 8s ease-in-out infinite;
+    background: radial-gradient(circle at 35% 30%, rgba(232,201,122,0.2), rgba(95,217,196,0.05) 75%);
+    border: 1px solid rgba(232,201,122,0.22);
+  }
+
+  .hero-text { text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
   .hero-text h2 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
     font-style: italic;
-    font-size: 1.875rem;
-    letter-spacing: 0.02em;
-    margin: 0 0 0.25rem 0;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    font-weight: 500;
+    font-size: 2rem;
+    letter-spacing: 0.01em;
+    margin: 0 0 0.15rem 0;
+    color: #0c0e14;
   }
-  @media (min-width: 768px) { .hero-text h2 { font-size: 3rem; } }
   .hero-text p {
-    font-size: 1.25rem;
-    font-weight: 300;
-    letter-spacing: 0.05em;
-    opacity: 0.9;
+    font-size: 1.1rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
     margin: 0;
+    color: #0c0e14;
   }
-  @media (min-width: 768px) { .hero-text p { font-size: 1.875rem; } }
-
-  .ready-text {
-    text-align: center;
-    opacity: 0.6;
-  }
-  .ready-text p {
-    font-size: 0.875rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin: 0;
-  }
-
-  /* ---------- Bottom controls ---------- */
-  .bottom-wrap {
-    margin-top: auto;
-    position: relative;
-    z-index: 10;
-    width: 100%;
-    padding-top: 1.5rem;
-  }
+  .ready-text { text-align: center; opacity: 0.65; color: var(--gold); }
+  .ready-text p { font-size: 0.72rem; letter-spacing: 0.22em; text-transform: uppercase; margin: 0; }
 
   .progress-track {
     width: 100%;
-    background: rgba(255,255,255,0.05);
-    height: 0.25rem;
+    background: var(--line-soft);
+    height: 3px;
     border-radius: 9999px;
     overflow: hidden;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(255,255,255,0.05);
     display: none;
   }
-  @media (min-width: 768px) { .progress-track { height: 0.375rem; margin-bottom: 2rem; } }
   .progress-fill {
     height: 100%;
-    background: linear-gradient(to right, #14b8a6, var(--accent));
-    box-shadow: 0 0 10px rgba(45,212,191,0.5);
+    background: linear-gradient(to right, var(--teal), var(--gold));
     transition: width 1s linear;
     width: 0%;
   }
 
-  .controls-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+  .practice-controls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .transport-row {
+    display: flex;
     align-items: center;
-    padding: 1.25rem;
-    border-radius: 1.5rem;
-  }
-  @media (min-width: 768px) {
-    .controls-grid { grid-template-columns: 1fr 1fr 1fr; padding: 1.5rem; }
+    justify-content: center;
+    gap: 1.75rem;
   }
 
-  .audio-col { display: flex; flex-direction: column; gap: 1rem; order: 2; }
-  @media (min-width: 768px) { .audio-col { order: 1; } }
+  .transport-btn {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.25s, color 0.25s, background 0.25s;
+  }
+  .transport-btn:hover { border-color: var(--gold-soft); color: var(--gold); background: var(--panel-2); }
+  .transport-btn svg { width: 18px; height: 18px; }
 
-  .audio-toggle-row {
+  /* The premium play button — signature element of the practice screen */
+  .play-btn {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: radial-gradient(circle at 32% 28%, #f6e3a8, var(--gold) 55%, #c9a55a 100%);
+    box-shadow:
+      0 0 0 1px rgba(232,201,122,0.4),
+      0 10px 30px rgba(232,201,122,0.22),
+      0 2px 8px rgba(0,0,0,0.4),
+      inset 0 2px 3px rgba(255,255,255,0.5),
+      inset 0 -4px 8px rgba(120,90,30,0.35);
+    transition: box-shadow 0.35s, transform 0.15s;
+  }
+  .play-btn::before {
+    content: '';
+    position: absolute;
+    inset: -8px;
+    border-radius: 50%;
+    border: 1px solid rgba(232,201,122,0.25);
+    transition: opacity 0.35s, transform 0.35s;
+  }
+  .play-btn:hover { transform: scale(1.035); }
+  .play-btn:hover::before { transform: scale(1.06); opacity: 0.6; }
+  .play-btn:active { transform: scale(0.97); }
+
+  .play-btn.running {
+    background: radial-gradient(circle at 32% 28%, #2a2d38, #181a22 60%, #0e0f15 100%);
+    box-shadow:
+      0 0 0 1px rgba(95,217,196,0.35),
+      0 10px 30px rgba(95,217,196,0.12),
+      0 2px 8px rgba(0,0,0,0.5),
+      inset 0 2px 3px rgba(255,255,255,0.05),
+      inset 0 -4px 8px rgba(0,0,0,0.4);
+  }
+  .play-btn.running::before { border-color: rgba(95,217,196,0.25); }
+
+  .play-btn svg { width: 1.6rem; height: 1.6rem; position: relative; z-index: 2; }
+  .play-btn.idle svg { fill: #14110a; margin-left: 3px; }
+  .play-btn.running svg { fill: var(--teal); }
+
+  .audio-strip {
+    background: var(--panel);
+    border: 1px solid var(--line-soft);
+    border-radius: 1.1rem;
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+  .audio-strip-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
+  .audio-strip-label {
+    font-size: 0.64rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
   .toggle-btn {
-    width: 2.5rem;
-    height: 1.25rem;
+    width: 2.4rem;
+    height: 1.3rem;
     border-radius: 9999px;
     position: relative;
-    transition: background-color 0.3s;
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.12);
     border: none;
     cursor: pointer;
     padding: 0;
+    transition: background 0.3s;
   }
-  @media (min-width: 768px) { .toggle-btn { width: 3rem; height: 1.5rem; } }
-  .toggle-btn.on { background: var(--accent); }
+  .toggle-btn.on { background: var(--gold); }
   .toggle-knob {
-    width: 0.875rem;
-    height: 0.875rem;
+    width: 0.9rem;
+    height: 0.9rem;
     background: #fff;
     border-radius: 50%;
     position: absolute;
-    top: 3px;
-    left: 4px;
+    top: 2px;
+    left: 3px;
     transition: left 0.3s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
-  @media (min-width: 768px) { .toggle-knob { width: 1rem; height: 1rem; top: 4px; } }
-  .toggle-btn.on .toggle-knob { left: 22px; }
-  @media (min-width: 768px) { .toggle-btn.on .toggle-knob { left: 28px; } }
+  .toggle-btn.on .toggle-knob { left: 1.2rem; }
 
-  .volume-controls {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-    transition: opacity 0.3s;
-  }
+  .volume-controls { display: flex; flex-direction: column; gap: 0.55rem; transition: opacity 0.3s; }
   .volume-controls.disabled { opacity: 0.3; pointer-events: none; }
-  .volume-row {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-  }
-  .volume-row svg { width: 1rem; height: 1rem; color: #6b7280; flex-shrink: 0; }
-  .volume-row input[type=range] { flex: 1; }
+  .volume-row { display: flex; align-items: center; gap: 0.65rem; }
+  .volume-row svg { width: 14px; height: 14px; color: var(--text-faint); flex-shrink: 0; }
 
-  .center-col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem;
-    order: 1;
-    padding: 1rem 0;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
-  }
-  @media (min-width: 768px) {
-    .center-col {
-      order: 2;
-      padding: 0;
-      border-bottom: none;
-      border-left: 1px solid rgba(255,255,255,0.05);
-      border-right: 1px solid rgba(255,255,255,0.05);
-    }
-  }
-
-  .icon-btn {
-    width: 3rem;
-    height: 3rem;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-    border: 1px solid rgba(255,255,255,0.1);
-    color: #9ca3af;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    height: 3px;
+    background: var(--line-soft);
+    border-radius: 2px;
+    outline: none;
     cursor: pointer;
   }
-  .icon-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
-  .icon-btn svg { width: 1.25rem; height: 1.25rem; }
-
-  .play-btn {
-    width: 4rem;
-    height: 4rem;
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px; height: 12px;
     border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    background: var(--gold);
+    cursor: pointer;
+    box-shadow: 0 0 8px rgba(232,201,122,0.5);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--gold);
     border: none;
     cursor: pointer;
-  }
-  @media (min-width: 768px) { .play-btn { width: 5rem; height: 5rem; } }
-  .play-btn svg { width: 2rem; height: 2rem; }
-  @media (min-width: 768px) { .play-btn svg { width: 2.5rem; height: 2.5rem; } }
-
-  .play-btn.idle {
-    background: linear-gradient(to top right, #14b8a6, var(--accent));
-    color: var(--dark);
-    box-shadow: 0 0 30px rgba(45,212,191,0.4);
-  }
-  .play-btn.idle:hover { box-shadow: 0 0 40px rgba(45,212,191,0.6); transform: scale(1.05); }
-  .play-btn.idle svg { margin-left: 0.375rem; }
-  @media (min-width: 768px) { .play-btn.idle svg { margin-left: 0.5rem; } }
-
-  .play-btn.running {
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 0 8px rgba(232,201,122,0.5);
   }
 
-  .status-col {
+  /* Finished overlay */
+  .finished-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 60;
     display: none;
-    order: 3;
-    text-align: right;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 9, 13, 0.86);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    padding: 1.5rem;
   }
-  @media (min-width: 768px) { .status-col { display: block; } }
-  .status-col .label {
-    font-size: 10px;
-    color: #6b7280;
+  .finished-overlay.show { display: flex; }
+  .finished-card {
+    background: var(--panel);
+    border: 1px solid var(--gold-soft);
+    padding: 2.4rem 2rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+    max-width: 24rem;
+    width: 100%;
+  }
+  .finished-card h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 1.9rem;
+    color: var(--gold);
+    margin: 0 0 0.85rem 0;
+  }
+  .finished-card p {
+    color: var(--text-dim);
+    font-size: 0.92rem;
+    margin: 0 0 2rem 0;
+    font-weight: 300;
+    line-height: 1.5;
+  }
+  .finished-card .em { color: var(--text); font-weight: 500; }
+  .finished-card button {
+    background: var(--gold);
+    border: none;
+    color: #14110a;
+    padding: 0.85rem 2.2rem;
+    border-radius: 9999px;
+    transition: box-shadow 0.3s;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
-    letter-spacing: 0.15em;
-    margin: 0 0 0.25rem 0;
+    font-size: 0.78rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
   }
-  .status-col .value {
-    font-size: 0.875rem;
-    color: #d1d5db;
-    margin: 0;
+  .finished-card button:hover { box-shadow: 0 0 30px rgba(232,201,122,0.3); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .w-ring-1, .w-ring-2, .w-ring-3, .w-core, .idle-pulse { animation: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="app">
+<div class="backdrop"></div>
+<div class="grain"></div>
 
-  <header class="app-header">
-    <h1>Alpha Harmonizer</h1>
-    <p>Premium Breath Metronome</p>
-  </header>
+<!-- ===================== SCREEN 1: WELCOME ===================== -->
+<section class="screen active" id="screen-welcome">
+  <div class="screen-inner">
+    <div class="welcome-ring-stage">
+      <div class="w-ring w-ring-1"></div>
+      <div class="w-ring w-ring-2"></div>
+      <div class="w-ring w-ring-3"></div>
+      <div class="w-core"></div>
+    </div>
+    <h1 class="app-title serif">Alpha Harmonizer</h1>
+    <p class="app-subtitle">Premium Breath Metronome</p>
+    <button class="begin-btn" id="beginBtn">Begin</button>
+    <p class="welcome-tagline">The answers you're looking for are already within you.</p>
+  </div>
+  <div class="brand-mark">Powered by <span>Consciousversity</span></div>
+</section>
 
-  <!-- Finished overlay -->
+<!-- ===================== SCREEN 2: BREATHING RATIO ===================== -->
+<section class="screen" id="screen-ratio">
+  <button class="back-btn" id="backFromRatio">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+  <div class="screen-inner">
+    <div class="step-trail">
+      <div class="step-dot current"></div>
+      <div class="step-dot"></div>
+      <div class="step-dot"></div>
+    </div>
+    <h2 class="select-heading serif">Choose Your Rhythm</h2>
+    <p class="select-sub">Each ratio shapes the nervous system differently. Pick the one that matches how you want to feel.</p>
+
+    <div class="ratio-list" id="ratioList"></div>
+
+    <div class="custom-panel" id="customPanel">
+      <div class="custom-panel-label">Custom ratio (seconds)</div>
+      <div class="custom-fields">
+        <div class="custom-field">
+          <label>In</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-field="inhale">−</button>
+            <input type="number" min="0" max="12" id="customInhale" value="4" inputmode="numeric">
+            <button type="button" data-step="1" data-field="inhale">+</button>
+          </div>
+        </div>
+        <div class="custom-field">
+          <label>Hold</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-field="holdIn">−</button>
+            <input type="number" min="0" max="12" id="customHoldIn" value="2" inputmode="numeric">
+            <button type="button" data-step="1" data-field="holdIn">+</button>
+          </div>
+        </div>
+        <div class="custom-field">
+          <label>Out</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-field="exhale">−</button>
+            <input type="number" min="0" max="12" id="customExhale" value="4" inputmode="numeric">
+            <button type="button" data-step="1" data-field="exhale">+</button>
+          </div>
+        </div>
+        <div class="custom-field">
+          <label>Hold</label>
+          <div class="stepper">
+            <button type="button" data-step="-1" data-field="holdOut">−</button>
+            <input type="number" min="0" max="12" id="customHoldOut" value="2" inputmode="numeric">
+            <button type="button" data-step="1" data-field="holdOut">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="continue-btn" id="continueFromRatio">Continue</button>
+  </div>
+</section>
+
+<!-- ===================== SCREEN 3: SESSION DURATION ===================== -->
+<section class="screen" id="screen-duration">
+  <button class="back-btn" id="backFromDuration">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+  <div class="screen-inner">
+    <div class="step-trail">
+      <div class="step-dot done"></div>
+      <div class="step-dot current"></div>
+      <div class="step-dot"></div>
+    </div>
+    <h2 class="select-heading serif">Set Your Duration</h2>
+    <p class="select-sub">Choose how long you'd like to stay with the practice today.</p>
+
+    <div class="duration-grid" id="durationGrid"></div>
+
+    <button class="continue-btn" id="continueFromDuration">Begin Practice</button>
+  </div>
+</section>
+
+<!-- ===================== SCREEN 4: PRACTICE ===================== -->
+<section class="screen" id="screen-practice">
+  <button class="back-btn" id="backFromPractice">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+  </button>
+
   <div class="finished-overlay" id="finishedOverlay">
-    <div class="finished-card glass-panel">
-      <h2>Session Complete</h2>
+    <div class="finished-card">
+      <h2 class="serif">Session Complete</h2>
       <p>You completed <span class="em" id="statCycles">0</span> cycles in <span class="em" id="statMinutes">0</span> minutes.</p>
       <button id="beginAnewBtn">Begin Anew</button>
     </div>
   </div>
 
-  <!-- Top Controls Grid -->
-  <div class="top-grid">
-
-    <!-- Ratios Panel -->
-    <div class="panel glass-panel">
-      <div>
-        <div class="panel-row">
-          <h3 class="panel-label">Breathing Ratio</h3>
-          <span class="ratio-display" id="ratioDisplay">4:4:4:4</span>
-        </div>
-        <div class="chip-row" id="presetChips"></div>
+  <div class="screen-inner">
+    <div class="practice-top">
+      <div class="practice-meta">
+        <span class="label">Remaining</span>
+        <span class="value" id="remainingTime">05:00</span>
       </div>
-
-      <div class="custom-grid" id="customGrid" style="display:none;">
-        <div class="field">
-          <label>In</label>
-          <input type="number" min="0" max="12" id="customInhale" value="4">
-        </div>
-        <div class="field">
-          <label>Hold</label>
-          <input type="number" min="0" max="12" id="customHoldIn" value="2">
-        </div>
-        <div class="field">
-          <label>Out</label>
-          <input type="number" min="0" max="12" id="customExhale" value="4">
-        </div>
-        <div class="field">
-          <label>Hold</label>
-          <input type="number" min="0" max="12" id="customHoldOut" value="2">
-        </div>
+      <div class="practice-meta right">
+        <span class="label">Cycles</span>
+        <span class="value accent" id="cyclesDone">0</span>
       </div>
     </div>
 
-    <!-- Duration Panel -->
-    <div class="panel glass-panel">
-      <div>
-        <h3 class="panel-label" style="margin-bottom:1rem;">Session Duration</h3>
-        <div class="chip-row" id="durationChips"></div>
-      </div>
-      <div class="stats-row">
-        <div>
-          <p class="stat-label">Remaining Time</p>
-          <p class="stat-value" id="remainingTime">05:00</p>
-        </div>
-        <div class="right">
-          <p class="stat-label">Cycles Done</p>
-          <p class="stat-value accent" id="cyclesDone">0</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- HERO CIRCLE ANIMATION -->
-  <div class="hero-wrap">
-    <div class="hero-stage">
+    <div class="practice-stage">
       <div class="ring ring-outer" id="ringOuter"></div>
       <div class="ring ring-inner" id="ringInner"></div>
       <div class="hero-circle idle-pulse" id="heroCircle">
-        <div class="ready-text" id="readyText">
-          <p>Ready</p>
-        </div>
+        <div class="ready-text" id="readyText"><p>Ready</p></div>
         <div class="hero-text" id="phaseText" style="display:none;">
           <h2 id="phaseLabel">Inhale</h2>
           <p id="phaseTime">4s</p>
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Bottom Controls -->
-  <div class="bottom-wrap">
-    <div class="progress-track" id="progressTrack">
-      <div class="progress-fill" id="progressFill"></div>
-    </div>
+    <div class="practice-controls">
+      <div class="progress-track" id="progressTrack">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
 
-    <div class="controls-grid glass-panel">
+      <div class="transport-row">
+        <button class="transport-btn" id="resetBtn" title="Reset" aria-label="Reset">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
 
-      <!-- Sound Settings -->
-      <div class="audio-col">
-        <div class="audio-toggle-row">
-          <span class="panel-label">Audio Mix</span>
-          <button class="toggle-btn on" id="soundToggle">
+        <button class="play-btn idle" id="playBtn" aria-label="Start">
+          <svg id="playIcon" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path></svg>
+        </button>
+
+        <div style="width:3rem;"></div>
+      </div>
+
+      <div class="audio-strip">
+        <div class="audio-strip-head">
+          <span class="audio-strip-label">Audio Mix</span>
+          <button class="toggle-btn on" id="soundToggle" aria-label="Toggle audio">
             <div class="toggle-knob"></div>
           </button>
         </div>
         <div class="volume-controls" id="volumeControls">
           <div class="volume-row">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-            <input type="range" min="0" max="100" value="80" id="cueVolume">
+            <input type="range" min="0" max="100" value="80" id="cueVolume" aria-label="Metronome volume">
           </div>
           <div class="volume-row">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-            <input type="range" min="0" max="100" value="50" id="ambientVolume">
+            <input type="range" min="0" max="100" value="50" id="ambientVolume" aria-label="Ambient volume">
           </div>
         </div>
-      </div>
-
-      <!-- Play/Pause Central Controls -->
-      <div class="center-col">
-        <button class="icon-btn" id="resetBtn" title="Reset">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-        </button>
-
-        <button class="play-btn idle" id="playBtn">
-          <svg id="playIcon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
-        </button>
-      </div>
-
-      <!-- Status -->
-      <div class="status-col">
-        <p class="label">Status</p>
-        <p class="value" id="statusText">Ready to begin</p>
       </div>
     </div>
   </div>
 
-</div>
+  <div class="brand-mark">Powered by <span>Consciousversity</span></div>
+</section>
 
 <script>
 (function () {
   'use strict';
 
-  /* ---------------- Data ---------------- */
+  /* ========================================================
+     DATA
+     ======================================================== */
   var PRESETS = {
-    '4-4':    { inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, label: 'Box' },
-    '4-7-8':  { inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, label: 'Relax' },
-    '4-4-6':  { inhale: 4, holdIn: 4, exhale: 6, holdOut: 0, label: 'Calm' },
-    '5-5-5-5':{ inhale: 5, holdIn: 5, exhale: 5, holdOut: 5, label: 'Deep Box' },
-    'custom': { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2, label: 'Custom' }
+    '4-4':     { inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, label: 'Box Breath',  desc: 'Steady focus, equal parts' },
+    '4-7-8':   { inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, label: 'Relax',       desc: 'Long exhale, deep release' },
+    '4-4-6':   { inhale: 4, holdIn: 4, exhale: 6, holdOut: 0, label: 'Calm',        desc: 'Gentle wind-down rhythm' },
+    '5-5-5-5': { inhale: 5, holdIn: 5, exhale: 5, holdOut: 5, label: 'Deep Box',    desc: 'Slower, fuller cycle' },
+    'custom':  { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2, label: 'Custom',      desc: 'Set your own ratio' }
   };
   var PRESET_ORDER = ['4-4', '4-7-8', '4-4-6', '5-5-5-5', 'custom'];
 
   var DURATIONS = [
-    { label: '3 min', val: 180 },
-    { label: '5 min', val: 300 },
-    { label: '10 min', val: 600 },
-    { label: '∞', val: 0 }
+    { label: '3', unit: 'minutes', val: 180 },
+    { label: '5', unit: 'minutes', val: 300 },
+    { label: '10', unit: 'minutes', val: 600 },
+    { label: '∞', unit: 'open session', val: 0 }
   ];
 
   var PHASE_CONFIG = {
-    inhale:  { color: 'rgba(56, 189, 248, 0.85)', shadow: 'rgba(56, 189, 248, 0.4)', label: 'Inhale', scale: 1.0, ringScale: 1.15, ringOpacity: 0.8 },
+    inhale:  { color: 'rgba(56, 189, 248, 0.85)',  shadow: 'rgba(56, 189, 248, 0.4)',  label: 'Inhale', scale: 1.0, ringScale: 1.15, ringOpacity: 0.8 },
     holdIn:  { color: 'rgba(167, 139, 250, 0.85)', shadow: 'rgba(167, 139, 250, 0.4)', label: 'Hold',   scale: 1.0, ringScale: 1.05, ringOpacity: 0.4 },
-    exhale:  { color: 'rgba(45, 212, 191, 0.85)',  shadow: 'rgba(45, 212, 191, 0.4)',  label: 'Exhale', scale: 0.4, ringScale: 0.5,  ringOpacity: 0.2 },
-    holdOut: { color: 'rgba(251, 191, 36, 0.85)',  shadow: 'rgba(251, 191, 36, 0.4)',  label: 'Hold',   scale: 0.4, ringScale: 0.45, ringOpacity: 0.1 }
+    exhale:  { color: 'rgba(95, 217, 196, 0.85)',  shadow: 'rgba(95, 217, 196, 0.4)',  label: 'Exhale', scale: 0.4, ringScale: 0.5,  ringOpacity: 0.2 },
+    holdOut: { color: 'rgba(243, 182, 95, 0.85)',  shadow: 'rgba(243, 182, 95, 0.4)',  label: 'Hold',   scale: 0.4, ringScale: 0.45, ringOpacity: 0.1 }
   };
-
   var PHASE_ORDER = ['inhale', 'holdIn', 'exhale', 'holdOut'];
 
-  /* ---------------- State ---------------- */
+  /* ========================================================
+     STATE
+     ======================================================== */
   var state = {
+    screen: 'welcome',
     selectedPreset: '4-4',
     customRatio: { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2 },
     duration: 300,
@@ -777,16 +1028,32 @@
   ambientAudio.loop = true;
   var cueAudio = new Audio('freesound_community-metronome-85688.mp3');
 
-  /* ---------------- DOM refs ---------------- */
+  /* ========================================================
+     DOM REFS
+     ======================================================== */
   var el = {
-    presetChips: document.getElementById('presetChips'),
-    durationChips: document.getElementById('durationChips'),
-    ratioDisplay: document.getElementById('ratioDisplay'),
-    customGrid: document.getElementById('customGrid'),
+    screens: {
+      welcome: document.getElementById('screen-welcome'),
+      ratio: document.getElementById('screen-ratio'),
+      duration: document.getElementById('screen-duration'),
+      practice: document.getElementById('screen-practice')
+    },
+    beginBtn: document.getElementById('beginBtn'),
+    backFromRatio: document.getElementById('backFromRatio'),
+    backFromDuration: document.getElementById('backFromDuration'),
+    backFromPractice: document.getElementById('backFromPractice'),
+
+    ratioList: document.getElementById('ratioList'),
+    customPanel: document.getElementById('customPanel'),
     customInhale: document.getElementById('customInhale'),
     customHoldIn: document.getElementById('customHoldIn'),
     customExhale: document.getElementById('customExhale'),
     customHoldOut: document.getElementById('customHoldOut'),
+    continueFromRatio: document.getElementById('continueFromRatio'),
+
+    durationGrid: document.getElementById('durationGrid'),
+    continueFromDuration: document.getElementById('continueFromDuration'),
+
     remainingTime: document.getElementById('remainingTime'),
     cyclesDone: document.getElementById('cyclesDone'),
     heroCircle: document.getElementById('heroCircle'),
@@ -805,17 +1072,18 @@
     resetBtn: document.getElementById('resetBtn'),
     playBtn: document.getElementById('playBtn'),
     playIcon: document.getElementById('playIcon'),
-    statusText: document.getElementById('statusText'),
     finishedOverlay: document.getElementById('finishedOverlay'),
     statCycles: document.getElementById('statCycles'),
     statMinutes: document.getElementById('statMinutes'),
     beginAnewBtn: document.getElementById('beginAnewBtn')
   };
 
-  var ICON_PAUSE = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>';
-  var ICON_PLAY = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>';
+  var ICON_PAUSE = '<svg id="playIcon" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z"></path></svg>';
+  var ICON_PLAY  = '<svg id="playIcon" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z"></path></svg>';
 
-  /* ---------------- Helpers ---------------- */
+  /* ========================================================
+     HELPERS
+     ======================================================== */
   function getActiveRatio() {
     return state.selectedPreset === 'custom' ? state.customRatio : PRESETS[state.selectedPreset];
   }
@@ -831,7 +1099,43 @@
   }
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-  /* ---------------- Audio ---------------- */
+  /* ========================================================
+     SCREEN NAVIGATION
+     ======================================================== */
+  function goToScreen(name) {
+    Object.keys(el.screens).forEach(function (key) {
+      el.screens[key].classList.toggle('active', key === name);
+    });
+    state.screen = name;
+  }
+
+  el.beginBtn.addEventListener('click', function () {
+    goToScreen('ratio');
+  });
+  el.backFromRatio.addEventListener('click', function () { goToScreen('welcome'); });
+  el.backFromDuration.addEventListener('click', function () { goToScreen('ratio'); });
+  el.backFromPractice.addEventListener('click', function () {
+    // Leaving practice should fully stop any running session
+    pauseEverything();
+    goToScreen('duration');
+  });
+
+  el.continueFromRatio.addEventListener('click', function () { goToScreen('duration'); });
+  el.continueFromDuration.addEventListener('click', function () {
+    resetSession();
+    goToScreen('practice');
+  });
+
+  function pauseEverything() {
+    state.isRunning = false;
+    ambientAudio.pause();
+    cancelAnimationFrame(rafId);
+    renderPlayButton();
+  }
+
+  /* ========================================================
+     AUDIO
+     ======================================================== */
   function applyVolumes() {
     ambientAudio.volume = state.soundEnabled ? (state.ambientVolume / 100) : 0;
     cueAudio.volume = state.soundEnabled ? (state.cueVolume / 100) : 0;
@@ -841,16 +1145,13 @@
     if (audioUnlocked) return;
     var p1 = ambientAudio.play();
     if (p1 !== undefined) {
-      p1.then(function () {
-        if (!state.isRunning) ambientAudio.pause();
-      }).catch(function (e) { console.log('Ambient autoplay blocked:', e); });
+      p1.then(function () { if (!state.isRunning) ambientAudio.pause(); })
+        .catch(function (e) { console.log('Ambient autoplay blocked:', e); });
     }
     var p2 = cueAudio.play();
     if (p2 !== undefined) {
-      p2.then(function () {
-        cueAudio.pause();
-        cueAudio.currentTime = 0;
-      }).catch(function (e) { console.log('Cue autoplay blocked:', e); });
+      p2.then(function () { cueAudio.pause(); cueAudio.currentTime = 0; })
+        .catch(function (e) { console.log('Cue autoplay blocked:', e); });
     }
     audioUnlocked = true;
   }
@@ -858,18 +1159,17 @@
   function triggerPhaseChange(newPhase) {
     state.currentPhase = newPhase;
     var ratio = getActiveRatio();
-
     if (state.soundEnabled && ratio[newPhase] > 0) {
       cueAudio.currentTime = 0;
       cueAudio.play().catch(function () {});
     }
-    if (navigator.vibrate && ratio[newPhase] > 0) {
-      navigator.vibrate(40);
-    }
-    render();
+    if (navigator.vibrate && ratio[newPhase] > 0) navigator.vibrate(40);
+    renderPracticeVisuals();
   }
 
-  /* ---------------- Core loop ---------------- */
+  /* ========================================================
+     CORE LOOP
+     ======================================================== */
   function finishSession() {
     state.isRunning = false;
     ambientAudio.pause();
@@ -881,7 +1181,8 @@
     };
     state.isFinished = true;
     cancelAnimationFrame(rafId);
-    render();
+    renderPlayButton();
+    renderFinished();
   }
 
   function loop() {
@@ -891,8 +1192,7 @@
     var cycleDuration = getCycleDuration();
 
     var now = Date.now();
-    var elapsedTotal = now - startTime;
-    var elapsedSeconds = elapsedTotal / 1000;
+    var elapsedSeconds = (now - startTime) / 1000;
 
     if (state.duration > 0 && elapsedSeconds >= state.duration) {
       finishSession();
@@ -921,20 +1221,20 @@
 
     state.phaseTimeLeft = Math.ceil(timeLeftInPhase);
 
-    var phaseChanged = activePhase !== state.currentPhase;
-    if (phaseChanged) {
+    if (activePhase !== state.currentPhase) {
       triggerPhaseChange(activePhase);
     } else {
-      renderTimers();
+      renderPracticeTimers();
     }
 
     rafId = requestAnimationFrame(loop);
   }
 
-  /* ---------------- Actions ---------------- */
+  /* ========================================================
+     ACTIONS
+     ======================================================== */
   function toggleSession() {
     unlockAudio();
-    var ratio = getActiveRatio();
     var cycleDuration = getCycleDuration();
 
     if (!state.isRunning) {
@@ -956,7 +1256,8 @@
       ambientAudio.pause();
       cancelAnimationFrame(rafId);
     }
-    render();
+    renderPlayButton();
+    renderPracticeVisuals();
   }
 
   function resetSession() {
@@ -970,43 +1271,57 @@
     ambientAudio.pause();
     ambientAudio.currentTime = 0;
     cancelAnimationFrame(rafId);
-    render();
+    renderPlayButton();
+    renderFinished();
+    renderPracticeVisuals();
   }
 
-  /* ---------------- Rendering ---------------- */
-  function buildChips() {
-    el.presetChips.innerHTML = '';
+  /* ========================================================
+     RENDER — RATIO SELECTION SCREEN
+     ======================================================== */
+  function buildRatioList() {
+    el.ratioList.innerHTML = '';
     PRESET_ORDER.forEach(function (key) {
-      var btn = document.createElement('button');
-      btn.className = 'chip' + (state.selectedPreset === key ? ' active' : '');
-      btn.textContent = PRESETS[key].label;
-      btn.addEventListener('click', function () {
+      var p = PRESETS[key];
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'ratio-card' + (state.selectedPreset === key ? ' active' : '');
+      card.setAttribute('data-key', key);
+
+      var figure = key === 'custom'
+        ? (state.customRatio.inhale + ':' + state.customRatio.holdIn + ':' + state.customRatio.exhale + ':' + state.customRatio.holdOut)
+        : (p.inhale + ':' + p.holdIn + ':' + p.exhale + ':' + p.holdOut);
+
+      card.innerHTML =
+        '<div class="ratio-card-left">' +
+          '<span class="ratio-card-name">' + p.label + '</span>' +
+          '<span class="ratio-card-desc">' + p.desc + '</span>' +
+        '</div>' +
+        '<span class="ratio-card-figure">' + figure + '</span>';
+
+      card.addEventListener('click', function () {
         state.selectedPreset = key;
         resetSession();
-        buildChips();
-        renderRatioPanel();
+        refreshRatioSelection();
       });
-      el.presetChips.appendChild(btn);
-    });
 
-    el.durationChips.innerHTML = '';
-    DURATIONS.forEach(function (d) {
-      var btn = document.createElement('button');
-      btn.className = 'chip' + (state.duration === d.val ? ' active' : '');
-      btn.textContent = d.label;
-      btn.addEventListener('click', function () {
-        state.duration = d.val;
-        resetSession();
-        buildChips();
-      });
-      el.durationChips.appendChild(btn);
+      el.ratioList.appendChild(card);
     });
   }
 
-  function renderRatioPanel() {
-    var ratio = getActiveRatio();
-    el.ratioDisplay.textContent = ratio.inhale + ':' + ratio.holdIn + ':' + ratio.exhale + ':' + ratio.holdOut;
-    el.customGrid.style.display = state.selectedPreset === 'custom' ? 'grid' : 'none';
+  function refreshRatioSelection() {
+    var cards = el.ratioList.querySelectorAll('.ratio-card');
+    cards.forEach(function (card) {
+      var key = card.getAttribute('data-key');
+      card.classList.toggle('active', key === state.selectedPreset);
+      var figureEl = card.querySelector('.ratio-card-figure');
+      var p = PRESETS[key];
+      var figure = key === 'custom'
+        ? (state.customRatio.inhale + ':' + state.customRatio.holdIn + ':' + state.customRatio.exhale + ':' + state.customRatio.holdOut)
+        : (p.inhale + ':' + p.holdIn + ':' + p.exhale + ':' + p.holdOut);
+      figureEl.textContent = figure;
+    });
+    el.customPanel.classList.toggle('show', state.selectedPreset === 'custom');
     if (state.selectedPreset === 'custom') {
       el.customInhale.value = state.customRatio.inhale;
       el.customHoldIn.value = state.customRatio.holdIn;
@@ -1015,7 +1330,66 @@
     }
   }
 
-  function renderTimers() {
+  function updateCustomField(field, value) {
+    value = clamp(value, 0, 12);
+    state.customRatio[field] = value;
+    resetSession();
+    refreshRatioSelection();
+  }
+
+  var customInputMap = { inhale: el.customInhale, holdIn: el.customHoldIn, exhale: el.customExhale, holdOut: el.customHoldOut };
+  Object.keys(customInputMap).forEach(function (field) {
+    customInputMap[field].addEventListener('change', function (e) {
+      var val = parseInt(e.target.value, 10);
+      if (isNaN(val)) val = 0;
+      updateCustomField(field, val);
+    });
+  });
+
+  var stepperButtons = el.customPanel.querySelectorAll('.stepper button');
+  stepperButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var field = btn.getAttribute('data-field');
+      var delta = parseInt(btn.getAttribute('data-step'), 10);
+      var current = state.customRatio[field];
+      updateCustomField(field, current + delta);
+    });
+  });
+
+  /* ========================================================
+     RENDER — DURATION SCREEN
+     ======================================================== */
+  function buildDurationGrid() {
+    el.durationGrid.innerHTML = '';
+    DURATIONS.forEach(function (d) {
+      var card = document.createElement('button');
+      card.type = 'button';
+      card.className = 'duration-card' + (state.duration === d.val ? ' active' : '');
+      card.setAttribute('data-val', d.val);
+      card.innerHTML =
+        '<span class="duration-card-value serif">' + d.label + '</span>' +
+        '<span class="duration-card-unit">' + d.unit + '</span>';
+      card.addEventListener('click', function () {
+        state.duration = d.val;
+        resetSession();
+        refreshDurationSelection();
+      });
+      el.durationGrid.appendChild(card);
+    });
+  }
+
+  function refreshDurationSelection() {
+    var cards = el.durationGrid.querySelectorAll('.duration-card');
+    cards.forEach(function (card) {
+      var val = parseInt(card.getAttribute('data-val'), 10);
+      card.classList.toggle('active', val === state.duration);
+    });
+  }
+
+  /* ========================================================
+     RENDER — PRACTICE SCREEN
+     ======================================================== */
+  function renderPracticeTimers() {
     el.remainingTime.textContent = state.duration === 0 ? '∞' : formatTime(state.sessionTimeLeft);
     el.cyclesDone.textContent = state.cyclesCompleted;
 
@@ -1024,12 +1398,15 @@
       : 100;
     el.progressFill.style.width = progressPercent + '%';
     el.progressTrack.style.display = state.duration > 0 ? 'block' : 'none';
+  }
+
+  function renderPracticeVisuals() {
+    renderPracticeTimers();
 
     var ratio = getActiveRatio();
     var style = state.isRunning ? PHASE_CONFIG[state.currentPhase] : PHASE_CONFIG.inhale;
     var transitionSecs = state.isRunning ? ratio[state.currentPhase] : 1;
 
-    // Hero circle
     if (state.isRunning) {
       el.heroCircle.classList.remove('idle-pulse');
       el.heroCircle.style.transform = 'scale(' + style.scale + ')';
@@ -1046,7 +1423,6 @@
       el.heroCircle.style.backdropFilter = 'none';
     }
 
-    // Rings
     var ringColorTransparent = style.color.replace('0.85', '0');
     var ringColorSoft = style.color.replace('0.85', '0.2');
     var ringColorBorder = style.color.replace('0.85', '0.5');
@@ -1061,7 +1437,6 @@
     el.ringInner.style.borderColor = ringColorBorder;
     el.ringInner.style.transitionDuration = transitionSecs + 's';
 
-    // Hero text
     if (state.isRunning && ratio[state.currentPhase] > 0) {
       el.readyText.style.display = 'none';
       el.phaseText.style.display = 'flex';
@@ -1075,21 +1450,20 @@
       el.readyText.style.display = 'none';
       el.phaseText.style.display = 'none';
     }
-
-    el.statusText.textContent = state.isRunning ? 'Session Active' : 'Ready to begin';
   }
 
   function renderPlayButton() {
     if (state.isRunning) {
       el.playBtn.classList.remove('idle');
       el.playBtn.classList.add('running');
-      el.playIcon.outerHTML = ICON_PAUSE;
+      el.playBtn.setAttribute('aria-label', 'Pause');
+      el.playBtn.innerHTML = ICON_PAUSE;
     } else {
       el.playBtn.classList.remove('running');
       el.playBtn.classList.add('idle');
-      el.playIcon.outerHTML = ICON_PLAY;
+      el.playBtn.setAttribute('aria-label', 'Start');
+      el.playBtn.innerHTML = ICON_PLAY;
     }
-    el.playIcon = document.getElementById('playIcon');
   }
 
   function renderFinished() {
@@ -1103,25 +1477,15 @@
   }
 
   function renderAudioPanel() {
-    if (state.soundEnabled) {
-      el.soundToggle.classList.add('on');
-      el.volumeControls.classList.remove('disabled');
-    } else {
-      el.soundToggle.classList.remove('on');
-      el.volumeControls.classList.add('disabled');
-    }
+    el.soundToggle.classList.toggle('on', state.soundEnabled);
+    el.volumeControls.classList.toggle('disabled', !state.soundEnabled);
     el.cueVolume.value = state.cueVolume;
     el.ambientVolume.value = state.ambientVolume;
   }
 
-  function render() {
-    renderTimers();
-    renderPlayButton();
-    renderFinished();
-    renderAudioPanel();
-  }
-
-  /* ---------------- Event wiring ---------------- */
+  /* ========================================================
+     EVENT WIRING — PRACTICE SCREEN
+     ======================================================== */
   el.playBtn.addEventListener('click', toggleSession);
   el.resetBtn.addEventListener('click', resetSession);
   el.beginAnewBtn.addEventListener('click', resetSession);
@@ -1141,26 +1505,21 @@
     applyVolumes();
   });
 
-  function wireCustomInput(inputEl, phaseKey) {
-    inputEl.addEventListener('change', function (e) {
-      var val = clamp(parseInt(e.target.value, 10) || 0, 0, 12);
-      state.customRatio[phaseKey] = val;
-      resetSession();
-      renderRatioPanel();
-    });
-  }
-  wireCustomInput(el.customInhale, 'inhale');
-  wireCustomInput(el.customHoldIn, 'holdIn');
-  wireCustomInput(el.customExhale, 'exhale');
-  wireCustomInput(el.customHoldOut, 'holdOut');
-
-  /* ---------------- Init ---------------- */
+  /* ========================================================
+     INIT
+     ======================================================== */
   applyVolumes();
-  buildChips();
-  renderRatioPanel();
+  buildRatioList();
+  refreshRatioSelection();
+  buildDurationGrid();
+  refreshDurationSelection();
+
   state.sessionTimeLeft = state.duration;
   state.phaseTimeLeft = getActiveRatio().inhale;
-  render();
+  renderPlayButton();
+  renderFinished();
+  renderAudioPanel();
+  renderPracticeVisuals();
 
   window.addEventListener('beforeunload', function () {
     ambientAudio.pause();
