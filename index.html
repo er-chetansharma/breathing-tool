@@ -1,538 +1,1173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alpha Harmonizer | Premium Breathing</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        dark: '#0f111a',
-                        accent: '#2dd4bf' // Teal-400
-                    },
-                    fontFamily: {
-                        sans: ['"Outfit"', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'serif'],
-                    }
-                }
-            }
-        }
-    </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alpha Harmonizer | Premium Breathing</title>
 
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
 
-    <style>
-        body {
-            background-color: #0f111a;
-            color: #f8fafc;
-            overflow-x: hidden;
-            background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f111a 70%);
-            min-height: 100vh;
-        }
+<style>
+  :root {
+    --dark: #0f111a;
+    --accent: #2dd4bf;
+  }
 
-        /* Glassmorphism Panels */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-        }
+  * { box-sizing: border-box; }
 
-        /* Smooth Breathing Animations */
-        .hero-circle {
-            transition-property: transform, background-color, box-shadow;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, background-color, box-shadow;
-        }
-        
-        .pulse-ring {
-            transition-property: transform, opacity, border-color;
-            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform, opacity;
-        }
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
 
-        /* Idle State Gentle Pulse */
-        @keyframes breatheIdle {
-            0% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
-            50% { transform: scale(0.65); box-shadow: 0 0 50px rgba(45, 212, 191, 0.2); opacity: 0.8; }
-            100% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
-        }
-        .idle-pulse {
-            animation: breatheIdle 8s ease-in-out infinite;
-            background-color: rgba(45, 212, 191, 0.15);
-            border: 1px solid rgba(45, 212, 191, 0.3);
-        }
+  body {
+    background-color: var(--dark);
+    color: #f8fafc;
+    overflow-x: hidden;
+    background-image: radial-gradient(circle at 50% 0%, #1e293b 0%, #0f111a 70%);
+    min-height: 100vh;
+    font-family: 'Outfit', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
 
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
-        
-        input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
-        
-        /* Custom Range Slider */
-        input[type=range] {
-            -webkit-appearance: none;
-            height: 4px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 2px;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #2dd4bf;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(45,212,191,0.5);
-        }
-    </style>
+  .font-serif { font-family: 'Playfair Display', serif; }
+
+  .app {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 64rem; /* max-w-5xl */
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+    position: relative;
+  }
+  @media (min-width: 640px) { .app { padding: 1.5rem 1.5rem; } }
+  @media (min-width: 768px) { .app { padding: 2rem 1.5rem; } }
+
+  /* Glassmorphism Panels */
+  .glass-panel {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  }
+
+  /* Smooth Breathing Animations */
+  .hero-circle {
+    transition-property: transform, background-color, box-shadow;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, background-color, box-shadow;
+  }
+
+  .pulse-ring {
+    transition-property: transform, opacity, border-color;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform, opacity;
+  }
+
+  @keyframes breatheIdle {
+    0% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
+    50% { transform: scale(0.65); box-shadow: 0 0 50px rgba(45, 212, 191, 0.2); opacity: 0.8; }
+    100% { transform: scale(0.6); box-shadow: 0 0 30px rgba(45, 212, 191, 0.1); opacity: 0.5; }
+  }
+  .idle-pulse {
+    animation: breatheIdle 8s ease-in-out infinite;
+    background-color: rgba(45, 212, 191, 0.15);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+  }
+
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+  input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+  input[type=number] { -moz-appearance: textfield; }
+
+  input[type=range] {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2dd4bf;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(45,212,191,0.5);
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #2dd4bf;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(45,212,191,0.5);
+  }
+
+  /* ---------- Header ---------- */
+  header.app-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 768px) { header.app-header { margin-bottom: 2.5rem; } }
+  header.app-header h1 {
+    font-size: 1.875rem;
+    line-height: 1.2;
+    background: linear-gradient(to right, #99f6e4, #2dd4bf);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.25rem 0;
+  }
+  @media (min-width: 768px) { header.app-header h1 { font-size: 2.25rem; } }
+  header.app-header p {
+    color: #9ca3af;
+    font-size: 0.75rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    font-weight: 300;
+    margin: 0;
+  }
+  @media (min-width: 768px) { header.app-header p { font-size: 0.875rem; } }
+
+  /* ---------- Finished overlay ---------- */
+  .finished-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 50;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 17, 26, 0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .finished-overlay.show { display: flex; }
+  .finished-card {
+    padding: 2rem;
+    border-radius: 1.5rem;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    margin: 0 1rem;
+    max-width: 28rem;
+    width: 100%;
+  }
+  @media (min-width: 768px) { .finished-card { padding: 3rem; } }
+  .finished-card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.875rem;
+    color: var(--accent);
+    margin: 0 0 0.75rem 0;
+  }
+  .finished-card p {
+    color: #d1d5db;
+    font-size: 1rem;
+    margin: 0 0 2rem 0;
+    font-weight: 300;
+  }
+  @media (min-width: 768px) { .finished-card p { font-size: 1.125rem; } }
+  .finished-card .em { color: #fff; font-weight: 500; }
+  .finished-card button {
+    background: rgba(45, 212, 191, 0.1);
+    border: 1px solid rgba(45, 212, 191, 0.3);
+    color: var(--accent);
+    padding: 0.75rem 2rem;
+    border-radius: 9999px;
+    transition: all 0.3s;
+    letter-spacing: 0.02em;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  .finished-card button:hover {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ---------- Top grid ---------- */
+  .top-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 10;
+  }
+  @media (min-width: 768px) {
+    .top-grid { grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 3rem; }
+  }
+
+  .panel {
+    border-radius: 1.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  @media (min-width: 768px) { .panel { padding: 1.5rem; } }
+
+  .panel-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+  .panel-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: #9ca3af;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+  }
+  .ratio-display {
+    color: var(--accent);
+    font-family: 'Playfair Display', serif;
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
+  }
+
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .chip {
+    padding: 0.375rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    transition: all 0.3s;
+    background: rgba(255,255,255,0.05);
+    color: #d1d5db;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  @media (min-width: 768px) { .chip { padding: 0.5rem 1rem; font-size: 0.875rem; } }
+  .chip:hover { background: rgba(255,255,255,0.1); }
+  .chip.active {
+    background: var(--accent);
+    color: var(--dark);
+    font-weight: 500;
+    box-shadow: 0 0 15px rgba(45,212,191,0.3);
+  }
+
+  .custom-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-top: 1rem;
+    background: rgba(0,0,0,0.2);
+    padding: 0.75rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .custom-grid .field {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .custom-grid label {
+    font-size: 9px;
+    color: #6b7280;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    letter-spacing: 0.1em;
+  }
+  .custom-grid input {
+    width: 2.5rem;
+    height: 2.5rem;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center;
+    border-radius: 0.75rem;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1rem;
+  }
+  @media (min-width: 768px) { .custom-grid input { width: 3rem; height: 3rem; } }
+  .custom-grid input:focus { outline: none; border-color: var(--accent); }
+
+  .stats-row {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    padding-top: 1rem;
+  }
+  .stats-row .stat-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    color: #6b7280;
+    letter-spacing: 0.15em;
+    margin-bottom: 0.25rem;
+  }
+  .stats-row .stat-value {
+    font-size: 1.5rem;
+    font-family: 'Playfair Display', serif;
+    color: #fff;
+  }
+  @media (min-width: 768px) { .stats-row .stat-value { font-size: 1.875rem; } }
+  .stats-row .stat-value.accent { color: var(--accent); }
+  .stats-row .right { text-align: right; }
+
+  /* ---------- Hero circle ---------- */
+  .hero-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+  @media (min-width: 768px) { .hero-wrap { padding: 3rem 0; } }
+
+  .hero-stage {
+    position: relative;
+    width: 16rem;
+    height: 16rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  @media (min-width: 480px) { .hero-stage { width: 18rem; height: 18rem; } }
+  @media (min-width: 768px) { .hero-stage { width: 24rem; height: 24rem; } }
+
+  .ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .ring-outer { transform: scale(0.8); opacity: 0; }
+  .ring-inner { border: 1px solid transparent; transform: scale(0.7); opacity: 0; }
+
+  .hero-circle {
+    position: absolute;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+    transform: scale(1);
+  }
+
+  .hero-text {
+    text-align: center;
+    transition: opacity 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-text h2 {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 1.875rem;
+    letter-spacing: 0.02em;
+    margin: 0 0 0.25rem 0;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  }
+  @media (min-width: 768px) { .hero-text h2 { font-size: 3rem; } }
+  .hero-text p {
+    font-size: 1.25rem;
+    font-weight: 300;
+    letter-spacing: 0.05em;
+    opacity: 0.9;
+    margin: 0;
+  }
+  @media (min-width: 768px) { .hero-text p { font-size: 1.875rem; } }
+
+  .ready-text {
+    text-align: center;
+    opacity: 0.6;
+  }
+  .ready-text p {
+    font-size: 0.875rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+
+  /* ---------- Bottom controls ---------- */
+  .bottom-wrap {
+    margin-top: auto;
+    position: relative;
+    z-index: 10;
+    width: 100%;
+    padding-top: 1.5rem;
+  }
+
+  .progress-track {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    height: 0.25rem;
+    border-radius: 9999px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+    display: none;
+  }
+  @media (min-width: 768px) { .progress-track { height: 0.375rem; margin-bottom: 2rem; } }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(to right, #14b8a6, var(--accent));
+    box-shadow: 0 0 10px rgba(45,212,191,0.5);
+    transition: width 1s linear;
+    width: 0%;
+  }
+
+  .controls-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.25rem;
+    border-radius: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .controls-grid { grid-template-columns: 1fr 1fr 1fr; padding: 1.5rem; }
+  }
+
+  .audio-col { display: flex; flex-direction: column; gap: 1rem; order: 2; }
+  @media (min-width: 768px) { .audio-col { order: 1; } }
+
+  .audio-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .toggle-btn {
+    width: 2.5rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    position: relative;
+    transition: background-color 0.3s;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+  @media (min-width: 768px) { .toggle-btn { width: 3rem; height: 1.5rem; } }
+  .toggle-btn.on { background: var(--accent); }
+  .toggle-knob {
+    width: 0.875rem;
+    height: 0.875rem;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 3px;
+    left: 4px;
+    transition: left 0.3s;
+  }
+  @media (min-width: 768px) { .toggle-knob { width: 1rem; height: 1rem; top: 4px; } }
+  .toggle-btn.on .toggle-knob { left: 22px; }
+  @media (min-width: 768px) { .toggle-btn.on .toggle-knob { left: 28px; } }
+
+  .volume-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: opacity 0.3s;
+  }
+  .volume-controls.disabled { opacity: 0.3; pointer-events: none; }
+  .volume-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .volume-row svg { width: 1rem; height: 1rem; color: #6b7280; flex-shrink: 0; }
+  .volume-row input[type=range] { flex: 1; }
+
+  .center-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    order: 1;
+    padding: 1rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  @media (min-width: 768px) {
+    .center-col {
+      order: 2;
+      padding: 0;
+      border-bottom: none;
+      border-left: 1px solid rgba(255,255,255,0.05);
+      border-right: 1px solid rgba(255,255,255,0.05);
+    }
+  }
+
+  .icon-btn {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #9ca3af;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .icon-btn:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .icon-btn svg { width: 1.25rem; height: 1.25rem; }
+
+  .play-btn {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+    border: none;
+    cursor: pointer;
+  }
+  @media (min-width: 768px) { .play-btn { width: 5rem; height: 5rem; } }
+  .play-btn svg { width: 2rem; height: 2rem; }
+  @media (min-width: 768px) { .play-btn svg { width: 2.5rem; height: 2.5rem; } }
+
+  .play-btn.idle {
+    background: linear-gradient(to top right, #14b8a6, var(--accent));
+    color: var(--dark);
+    box-shadow: 0 0 30px rgba(45,212,191,0.4);
+  }
+  .play-btn.idle:hover { box-shadow: 0 0 40px rgba(45,212,191,0.6); transform: scale(1.05); }
+  .play-btn.idle svg { margin-left: 0.375rem; }
+  @media (min-width: 768px) { .play-btn.idle svg { margin-left: 0.5rem; } }
+
+  .play-btn.running {
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+
+  .status-col {
+    display: none;
+    order: 3;
+    text-align: right;
+  }
+  @media (min-width: 768px) { .status-col { display: block; } }
+  .status-col .label {
+    font-size: 10px;
+    color: #6b7280;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 0.25rem 0;
+  }
+  .status-col .value {
+    font-size: 0.875rem;
+    color: #d1d5db;
+    margin: 0;
+  }
+</style>
 </head>
 <body>
-    <div id="root"></div>
 
-    <script type="text/babel" data-presets="react">
-        const { useState, useEffect, useRef, useCallback } = React;
+<div class="app">
 
-        const PRESETS = {
-            '4-4': { inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, label: 'Box' },
-            '4-7-8': { inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, label: 'Relax' },
-            '4-4-6': { inhale: 4, holdIn: 4, exhale: 6, holdOut: 0, label: 'Calm' },
-            '5-5-5-5': { inhale: 5, holdIn: 5, exhale: 5, holdOut: 5, label: 'Deep Box' },
-            'custom': { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2, label: 'Custom' }
-        };
+  <header class="app-header">
+    <h1>Alpha Harmonizer</h1>
+    <p>Premium Breath Metronome</p>
+  </header>
 
-        const DURATIONS = [
-            { label: '3 min', val: 180 },
-            { label: '5 min', val: 300 },
-            { label: '10 min', val: 600 },
-            { label: '∞', val: 0 }
-        ];
+  <!-- Finished overlay -->
+  <div class="finished-overlay" id="finishedOverlay">
+    <div class="finished-card glass-panel">
+      <h2>Session Complete</h2>
+      <p>You completed <span class="em" id="statCycles">0</span> cycles in <span class="em" id="statMinutes">0</span> minutes.</p>
+      <button id="beginAnewBtn">Begin Anew</button>
+    </div>
+  </div>
 
-        const PHASE_CONFIG = {
-            inhale:  { color: 'rgba(56, 189, 248, 0.85)', shadow: 'rgba(56, 189, 248, 0.4)', label: 'Inhale', scale: 1.0, ringScale: 1.15, ringOpacity: 0.8 },
-            holdIn:  { color: 'rgba(167, 139, 250, 0.85)', shadow: 'rgba(167, 139, 250, 0.4)', label: 'Hold',   scale: 1.0, ringScale: 1.05, ringOpacity: 0.4 },
-            exhale:  { color: 'rgba(45, 212, 191, 0.85)',  shadow: 'rgba(45, 212, 191, 0.4)',  label: 'Exhale', scale: 0.4, ringScale: 0.5,  ringOpacity: 0.2 },
-            holdOut: { color: 'rgba(251, 191, 36, 0.85)',  shadow: 'rgba(251, 191, 36, 0.4)',  label: 'Hold',   scale: 0.4, ringScale: 0.45, ringOpacity: 0.1 }
-        };
+  <!-- Top Controls Grid -->
+  <div class="top-grid">
 
-        const AlphaHarmonizer = () => {
-            const [selectedPreset, setSelectedPreset] = useState('4-4');
-            const [customRatio, setCustomRatio] = useState(PRESETS['custom']);
-            const [duration, setDuration] = useState(300);
-            
-            const [isRunning, setIsRunning] = useState(false);
-            const [isFinished, setIsFinished] = useState(false);
-            const [sessionStats, setSessionStats] = useState({ cycles: 0, minutes: 0 });
-            
-            const [currentPhase, setCurrentPhase] = useState('inhale');
-            const [phaseTimeLeft, setPhaseTimeLeft] = useState(0);
-            const [sessionTimeLeft, setSessionTimeLeft] = useState(300);
-            const [cyclesCompleted, setCyclesCompleted] = useState(0);
-            
-            const [soundEnabled, setSoundEnabled] = useState(true);
-            const [cueVolume, setCueVolume] = useState(80);
-            const [ambientVolume, setAmbientVolume] = useState(50);
+    <!-- Ratios Panel -->
+    <div class="panel glass-panel">
+      <div>
+        <div class="panel-row">
+          <h3 class="panel-label">Breathing Ratio</h3>
+          <span class="ratio-display" id="ratioDisplay">4:4:4:4</span>
+        </div>
+        <div class="chip-row" id="presetChips"></div>
+      </div>
 
-            const startTimeRef = useRef(0);
-            const currentPhaseRef = useRef('inhale');
-            const reqAnimFrameRef = useRef(null);
-            const audioUnlocked = useRef(false);
-            
-            const ambientAudioRef = useRef(null);
-            const cueAudioRef = useRef(null);
+      <div class="custom-grid" id="customGrid" style="display:none;">
+        <div class="field">
+          <label>In</label>
+          <input type="number" min="0" max="12" id="customInhale" value="4">
+        </div>
+        <div class="field">
+          <label>Hold</label>
+          <input type="number" min="0" max="12" id="customHoldIn" value="2">
+        </div>
+        <div class="field">
+          <label>Out</label>
+          <input type="number" min="0" max="12" id="customExhale" value="4">
+        </div>
+        <div class="field">
+          <label>Hold</label>
+          <input type="number" min="0" max="12" id="customHoldOut" value="2">
+        </div>
+      </div>
+    </div>
 
-            const activeRatio = selectedPreset === 'custom' ? customRatio : PRESETS[selectedPreset];
-            const cycleDuration = activeRatio.inhale + activeRatio.holdIn + activeRatio.exhale + activeRatio.holdOut;
+    <!-- Duration Panel -->
+    <div class="panel glass-panel">
+      <div>
+        <h3 class="panel-label" style="margin-bottom:1rem;">Session Duration</h3>
+        <div class="chip-row" id="durationChips"></div>
+      </div>
+      <div class="stats-row">
+        <div>
+          <p class="stat-label">Remaining Time</p>
+          <p class="stat-value" id="remainingTime">05:00</p>
+        </div>
+        <div class="right">
+          <p class="stat-label">Cycles Done</p>
+          <p class="stat-value accent" id="cyclesDone">0</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-            // Initialize Audio - PATHS FIXED HERE!
-            useEffect(() => {
-                ambientAudioRef.current = new Audio('freesound_community-binaural-beats_delta_440_440-5hz-48565.mp3');
-                ambientAudioRef.current.loop = true;
-                
-                cueAudioRef.current = new Audio('freesound_community-metronome-85688.mp3');
+  <!-- HERO CIRCLE ANIMATION -->
+  <div class="hero-wrap">
+    <div class="hero-stage">
+      <div class="ring ring-outer" id="ringOuter"></div>
+      <div class="ring ring-inner" id="ringInner"></div>
+      <div class="hero-circle idle-pulse" id="heroCircle">
+        <div class="ready-text" id="readyText">
+          <p>Ready</p>
+        </div>
+        <div class="hero-text" id="phaseText" style="display:none;">
+          <h2 id="phaseLabel">Inhale</h2>
+          <p id="phaseTime">4s</p>
+        </div>
+      </div>
+    </div>
+  </div>
 
-                return () => {
-                    ambientAudioRef.current?.pause();
-                    cueAudioRef.current?.pause();
-                    cancelAnimationFrame(reqAnimFrameRef.current);
-                };
-            }, []);
+  <!-- Bottom Controls -->
+  <div class="bottom-wrap">
+    <div class="progress-track" id="progressTrack">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
 
-            useEffect(() => {
-                if (ambientAudioRef.current) ambientAudioRef.current.volume = soundEnabled ? (ambientVolume / 100) : 0;
-                if (cueAudioRef.current) cueAudioRef.current.volume = soundEnabled ? (cueVolume / 100) : 0;
-            }, [ambientVolume, cueVolume, soundEnabled]);
+    <div class="controls-grid glass-panel">
 
-            const unlockAudio = () => {
-                if (!audioUnlocked.current) {
-                    const playPromiseAmb = ambientAudioRef.current?.play();
-                    if (playPromiseAmb !== undefined) {
-                        playPromiseAmb.then(() => {
-                            if (!isRunning) ambientAudioRef.current.pause();
-                        }).catch(e => console.log("Ambient autoplay blocked:", e));
-                    }
-                    
-                    const playPromiseCue = cueAudioRef.current?.play();
-                    if (playPromiseCue !== undefined) {
-                        playPromiseCue.then(() => {
-                            cueAudioRef.current.pause();
-                            cueAudioRef.current.currentTime = 0;
-                        }).catch(e => console.log("Cue autoplay blocked:", e));
-                    }
-                    audioUnlocked.current = true;
-                }
-            };
+      <!-- Sound Settings -->
+      <div class="audio-col">
+        <div class="audio-toggle-row">
+          <span class="panel-label">Audio Mix</span>
+          <button class="toggle-btn on" id="soundToggle">
+            <div class="toggle-knob"></div>
+          </button>
+        </div>
+        <div class="volume-controls" id="volumeControls">
+          <div class="volume-row">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+            <input type="range" min="0" max="100" value="80" id="cueVolume">
+          </div>
+          <div class="volume-row">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+            <input type="range" min="0" max="100" value="50" id="ambientVolume">
+          </div>
+        </div>
+      </div>
 
-            const triggerPhaseChange = (newPhase) => {
-                setCurrentPhase(newPhase);
-                currentPhaseRef.current = newPhase;
-                
-                if (soundEnabled && cueAudioRef.current && activeRatio[newPhase] > 0) {
-                    cueAudioRef.current.currentTime = 0;
-                    cueAudioRef.current.play().catch(()=>{});
-                }
-                
-                if (navigator.vibrate && activeRatio[newPhase] > 0) {
-                    navigator.vibrate(40);
-                }
-            };
+      <!-- Play/Pause Central Controls -->
+      <div class="center-col">
+        <button class="icon-btn" id="resetBtn" title="Reset">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        </button>
 
-            const finishSession = () => {
-                setIsRunning(false);
-                ambientAudioRef.current?.pause();
-                setSessionStats({
-                    cycles: cyclesCompleted,
-                    minutes: duration > 0 ? (duration / 60).toFixed(1) : ((Date.now() - startTimeRef.current) / 60000).toFixed(1)
-                });
-                setIsFinished(true);
-            };
+        <button class="play-btn idle" id="playBtn">
+          <svg id="playIcon" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>
+        </button>
+      </div>
 
-            const loop = useCallback(() => {
-                if (!isRunning) return;
+      <!-- Status -->
+      <div class="status-col">
+        <p class="label">Status</p>
+        <p class="value" id="statusText">Ready to begin</p>
+      </div>
+    </div>
+  </div>
 
-                const now = Date.now();
-                const elapsedTotal = now - startTimeRef.current;
-                const elapsedSeconds = elapsedTotal / 1000;
-                
-                if (duration > 0 && elapsedSeconds >= duration) {
-                    finishSession();
-                    return;
-                }
+</div>
 
-                const currentCycleSeconds = elapsedSeconds % cycleDuration;
-                const completed = Math.floor(elapsedSeconds / cycleDuration);
-                
-                if (completed !== cyclesCompleted) setCyclesCompleted(completed);
-                if (duration > 0) setSessionTimeLeft(Math.max(0, Math.ceil(duration - elapsedSeconds)));
+<script>
+(function () {
+  'use strict';
 
-                let phaseAcc = 0;
-                let activePhase = 'inhale';
-                let timeLeftInPhase = 0;
+  /* ---------------- Data ---------------- */
+  var PRESETS = {
+    '4-4':    { inhale: 4, holdIn: 4, exhale: 4, holdOut: 4, label: 'Box' },
+    '4-7-8':  { inhale: 4, holdIn: 7, exhale: 8, holdOut: 0, label: 'Relax' },
+    '4-4-6':  { inhale: 4, holdIn: 4, exhale: 6, holdOut: 0, label: 'Calm' },
+    '5-5-5-5':{ inhale: 5, holdIn: 5, exhale: 5, holdOut: 5, label: 'Deep Box' },
+    'custom': { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2, label: 'Custom' }
+  };
+  var PRESET_ORDER = ['4-4', '4-7-8', '4-4-6', '5-5-5-5', 'custom'];
 
-                const phases = ['inhale', 'holdIn', 'exhale', 'holdOut'];
-                for (let i = 0; i < phases.length; i++) {
-                    const p = phases[i];
-                    if (currentCycleSeconds < phaseAcc + activeRatio[p]) {
-                        activePhase = p;
-                        timeLeftInPhase = (phaseAcc + activeRatio[p]) - currentCycleSeconds;
-                        break;
-                    }
-                    phaseAcc += activeRatio[p];
-                }
+  var DURATIONS = [
+    { label: '3 min', val: 180 },
+    { label: '5 min', val: 300 },
+    { label: '10 min', val: 600 },
+    { label: '∞', val: 0 }
+  ];
 
-                setPhaseTimeLeft(Math.ceil(timeLeftInPhase));
+  var PHASE_CONFIG = {
+    inhale:  { color: 'rgba(56, 189, 248, 0.85)', shadow: 'rgba(56, 189, 248, 0.4)', label: 'Inhale', scale: 1.0, ringScale: 1.15, ringOpacity: 0.8 },
+    holdIn:  { color: 'rgba(167, 139, 250, 0.85)', shadow: 'rgba(167, 139, 250, 0.4)', label: 'Hold',   scale: 1.0, ringScale: 1.05, ringOpacity: 0.4 },
+    exhale:  { color: 'rgba(45, 212, 191, 0.85)',  shadow: 'rgba(45, 212, 191, 0.4)',  label: 'Exhale', scale: 0.4, ringScale: 0.5,  ringOpacity: 0.2 },
+    holdOut: { color: 'rgba(251, 191, 36, 0.85)',  shadow: 'rgba(251, 191, 36, 0.4)',  label: 'Hold',   scale: 0.4, ringScale: 0.45, ringOpacity: 0.1 }
+  };
 
-                if (activePhase !== currentPhaseRef.current) {
-                    triggerPhaseChange(activePhase);
-                }
+  var PHASE_ORDER = ['inhale', 'holdIn', 'exhale', 'holdOut'];
 
-                reqAnimFrameRef.current = requestAnimationFrame(loop);
-            }, [isRunning, cycleDuration, activeRatio, duration, cyclesCompleted]);
+  /* ---------------- State ---------------- */
+  var state = {
+    selectedPreset: '4-4',
+    customRatio: { inhale: 4, holdIn: 2, exhale: 4, holdOut: 2 },
+    duration: 300,
 
-            useEffect(() => {
-                if (isRunning) {
-                    reqAnimFrameRef.current = requestAnimationFrame(loop);
-                } else {
-                    cancelAnimationFrame(reqAnimFrameRef.current);
-                }
-                return () => cancelAnimationFrame(reqAnimFrameRef.current);
-            }, [isRunning, loop]);
+    isRunning: false,
+    isFinished: false,
+    sessionStats: { cycles: 0, minutes: 0 },
 
-            const toggleSession = () => {
-                unlockAudio();
-                if (!isRunning) {
-                    if (isFinished) resetSession();
-                    startTimeRef.current = Date.now() - (cyclesCompleted * cycleDuration * 1000) - ((cycleDuration - phaseTimeLeft) * 1000); 
-                    if(cyclesCompleted === 0 && phaseTimeLeft === 0) {
-                         startTimeRef.current = Date.now();
-                         triggerPhaseChange('inhale');
-                    }
-                    setIsRunning(true);
-                    if (soundEnabled) ambientAudioRef.current?.play().catch(()=>{});
-                } else {
-                    setIsRunning(false);
-                    ambientAudioRef.current?.pause();
-                }
-            };
+    currentPhase: 'inhale',
+    phaseTimeLeft: 0,
+    sessionTimeLeft: 300,
+    cyclesCompleted: 0,
 
-            const resetSession = () => {
-                setIsRunning(false);
-                setIsFinished(false);
-                setCyclesCompleted(0);
-                setSessionTimeLeft(duration);
-                setCurrentPhase('inhale');
-                currentPhaseRef.current = 'inhale';
-                setPhaseTimeLeft(activeRatio.inhale);
-                ambientAudioRef.current?.pause();
-                if(ambientAudioRef.current) ambientAudioRef.current.currentTime = 0;
-            };
+    soundEnabled: true,
+    cueVolume: 80,
+    ambientVolume: 50
+  };
 
-            const formatTime = (secs) => {
-                const m = Math.floor(secs / 60).toString().padStart(2, '0');
-                const s = (secs % 60).toString().padStart(2, '0');
-                return `${m}:${s}`;
-            };
+  var startTime = 0;
+  var rafId = null;
+  var audioUnlocked = false;
 
-            const progressPercent = duration > 0 ? Math.min(100, ((duration - sessionTimeLeft) / duration) * 100) : 100;
-            const currentStyle = isRunning ? PHASE_CONFIG[currentPhase] : PHASE_CONFIG['inhale'];
-            const transitionSecs = isRunning ? activeRatio[currentPhase] : 1;
+  var ambientAudio = new Audio('freesound_community-binaural-beats_delta_440_440-5hz-48565.mp3');
+  ambientAudio.loop = true;
+  var cueAudio = new Audio('freesound_community-metronome-85688.mp3');
 
-            return (
-                <div className="min-h-screen flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-6 py-6 md:py-8 relative">
-                    
-                    {/* Header */}
-                    <header className="text-center mb-6 md:mb-10">
-                        <h1 className="font-serif text-3xl md:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-teal-200 to-teal-400 tracking-wide mb-1">Alpha Harmonizer</h1>
-                        <p className="text-gray-400 text-xs md:text-sm tracking-[0.2em] uppercase font-light">Premium Breath Metronome</p>
-                    </header>
+  /* ---------------- DOM refs ---------------- */
+  var el = {
+    presetChips: document.getElementById('presetChips'),
+    durationChips: document.getElementById('durationChips'),
+    ratioDisplay: document.getElementById('ratioDisplay'),
+    customGrid: document.getElementById('customGrid'),
+    customInhale: document.getElementById('customInhale'),
+    customHoldIn: document.getElementById('customHoldIn'),
+    customExhale: document.getElementById('customExhale'),
+    customHoldOut: document.getElementById('customHoldOut'),
+    remainingTime: document.getElementById('remainingTime'),
+    cyclesDone: document.getElementById('cyclesDone'),
+    heroCircle: document.getElementById('heroCircle'),
+    ringOuter: document.getElementById('ringOuter'),
+    ringInner: document.getElementById('ringInner'),
+    readyText: document.getElementById('readyText'),
+    phaseText: document.getElementById('phaseText'),
+    phaseLabel: document.getElementById('phaseLabel'),
+    phaseTime: document.getElementById('phaseTime'),
+    progressTrack: document.getElementById('progressTrack'),
+    progressFill: document.getElementById('progressFill'),
+    soundToggle: document.getElementById('soundToggle'),
+    volumeControls: document.getElementById('volumeControls'),
+    cueVolume: document.getElementById('cueVolume'),
+    ambientVolume: document.getElementById('ambientVolume'),
+    resetBtn: document.getElementById('resetBtn'),
+    playBtn: document.getElementById('playBtn'),
+    playIcon: document.getElementById('playIcon'),
+    statusText: document.getElementById('statusText'),
+    finishedOverlay: document.getElementById('finishedOverlay'),
+    statCycles: document.getElementById('statCycles'),
+    statMinutes: document.getElementById('statMinutes'),
+    beginAnewBtn: document.getElementById('beginAnewBtn')
+  };
 
-                    {isFinished && (
-                        <div className="absolute inset-0 z-50 flex items-center justify-center bg-dark/80 backdrop-blur-md transition-opacity duration-700">
-                            <div className="glass-panel p-8 md:p-12 rounded-3xl text-center shadow-2xl mx-4 max-w-md w-full">
-                                <h2 className="font-serif text-3xl text-accent mb-3">Session Complete</h2>
-                                <p className="text-gray-300 text-base md:text-lg mb-8 font-light">
-                                    You completed <span className="text-white font-medium">{sessionStats.cycles}</span> cycles in <span className="text-white font-medium">{sessionStats.minutes}</span> minutes.
-                                </p>
-                                <button onClick={resetSession} className="bg-accent/10 border border-accent/30 text-accent hover:bg-accent hover:text-white px-8 py-3 rounded-full transition-all duration-300 tracking-wide">
-                                    Begin Anew
-                                </button>
-                            </div>
-                        </div>
-                    )}
+  var ICON_PAUSE = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path></svg>';
+  var ICON_PLAY = '<svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd"></path></svg>';
 
-                    {/* Top Controls Grid */}
-                    <div className="grid md:grid-cols-2 gap-4 md:gap-6 mb-8 md:mb-12 relative z-10">
-                        
-                        {/* Ratios Panel */}
-                        <div className="glass-panel rounded-3xl p-5 md:p-6 flex flex-col justify-between">
-                            <div>
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-[11px] uppercase text-gray-400 tracking-widest font-semibold">Breathing Ratio</h3>
-                                    <span className="text-accent font-serif text-sm tracking-widest">
-                                        {activeRatio.inhale}:{activeRatio.holdIn}:{activeRatio.exhale}:{activeRatio.holdOut}
-                                    </span>
-                                </div>
-                                <div className="flex flex-wrap gap-2 mb-2">
-                                    {Object.keys(PRESETS).map(key => (
-                                        <button 
-                                            key={key} 
-                                            onClick={() => { setSelectedPreset(key); resetSession(); }}
-                                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-all duration-300 ${selectedPreset === key ? 'bg-accent text-dark font-medium shadow-[0_0_15px_rgba(45,212,191,0.3)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
-                                        >
-                                            {PRESETS[key].label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            
-                            {selectedPreset === 'custom' && (
-                                <div className="grid grid-cols-4 gap-2 mt-4 bg-black/20 p-3 rounded-2xl border border-white/5">
-                                    {['inhale', 'holdIn', 'exhale', 'holdOut'].map((phase, i) => (
-                                        <div key={phase} className="flex flex-col items-center">
-                                            <label className="text-[9px] text-gray-500 uppercase mb-1 tracking-wider">{['In', 'Hold', 'Out', 'Hold'][i]}</label>
-                                            <input 
-                                                type="number" min="0" max="12" 
-                                                value={customRatio[phase]}
-                                                onChange={(e) => {
-                                                    const val = Math.max(0, Math.min(12, parseInt(e.target.value) || 0));
-                                                    setCustomRatio({...customRatio, [phase]: val});
-                                                    resetSession();
-                                                }}
-                                                className="w-10 h-10 md:w-12 md:h-12 bg-white/5 border border-white/10 text-center rounded-xl text-white focus:outline-none focus:border-accent transition-colors"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
+  /* ---------------- Helpers ---------------- */
+  function getActiveRatio() {
+    return state.selectedPreset === 'custom' ? state.customRatio : PRESETS[state.selectedPreset];
+  }
+  function getCycleDuration() {
+    var r = getActiveRatio();
+    return r.inhale + r.holdIn + r.exhale + r.holdOut;
+  }
+  function formatTime(secs) {
+    secs = Math.max(0, Math.floor(secs));
+    var m = Math.floor(secs / 60).toString().padStart(2, '0');
+    var s = (secs % 60).toString().padStart(2, '0');
+    return m + ':' + s;
+  }
+  function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
-                        {/* Duration Panel */}
-                        <div className="glass-panel rounded-3xl p-5 md:p-6 flex flex-col justify-between">
-                            <div>
-                                <h3 className="text-[11px] uppercase text-gray-400 tracking-widest font-semibold mb-4">Session Duration</h3>
-                                <div className="flex flex-wrap gap-2">
-                                    {DURATIONS.map(d => (
-                                        <button 
-                                            key={d.label} 
-                                            onClick={() => { setDuration(d.val); resetSession(); }}
-                                            className={`px-3 md:px-4 py-1.5 md:py-2 rounded-full text-xs md:text-sm transition-all duration-300 ${duration === d.val ? 'bg-accent text-dark font-medium shadow-[0_0_15px_rgba(45,212,191,0.3)]' : 'bg-white/5 text-gray-300 hover:bg-white/10'}`}
-                                        >
-                                            {d.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div className="mt-6 flex justify-between items-end border-t border-white/10 pt-4">
-                                <div>
-                                    <p className="text-[9px] uppercase text-gray-500 tracking-widest mb-1">Remaining Time</p>
-                                    <p className="text-2xl md:text-3xl font-serif text-white">{duration === 0 ? '∞' : formatTime(sessionTimeLeft)}</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className="text-[9px] uppercase text-gray-500 tracking-widest mb-1">Cycles Done</p>
-                                    <p className="text-2xl md:text-3xl font-serif text-accent">{cyclesCompleted}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+  /* ---------------- Audio ---------------- */
+  function applyVolumes() {
+    ambientAudio.volume = state.soundEnabled ? (state.ambientVolume / 100) : 0;
+    cueAudio.volume = state.soundEnabled ? (state.cueVolume / 100) : 0;
+  }
 
-                    {/* HERO CIRCLE ANIMATION */}
-                    <div className="flex-1 flex flex-col items-center justify-center py-6 md:py-12 relative overflow-hidden">
-                        <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-96 md:h-96 flex items-center justify-center">
-                            
-                            {/* Outer Glow Ring */}
-                            <div 
-                                className="absolute inset-0 rounded-full pulse-ring pointer-events-none"
-                                style={{
-                                    transform: isRunning ? `scale(${currentStyle.ringScale + 0.1})` : 'scale(0.8)',
-                                    opacity: isRunning ? currentStyle.ringOpacity * 0.5 : 0,
-                                    background: `radial-gradient(circle, ${currentStyle.color.replace('0.85', '0')} 40%, ${currentStyle.color.replace('0.85', '0.2')} 100%)`,
-                                    transitionDuration: `${transitionSecs}s`
-                                }}
-                            ></div>
+  function unlockAudio() {
+    if (audioUnlocked) return;
+    var p1 = ambientAudio.play();
+    if (p1 !== undefined) {
+      p1.then(function () {
+        if (!state.isRunning) ambientAudio.pause();
+      }).catch(function (e) { console.log('Ambient autoplay blocked:', e); });
+    }
+    var p2 = cueAudio.play();
+    if (p2 !== undefined) {
+      p2.then(function () {
+        cueAudio.pause();
+        cueAudio.currentTime = 0;
+      }).catch(function (e) { console.log('Cue autoplay blocked:', e); });
+    }
+    audioUnlocked = true;
+  }
 
-                            {/* Inner Pulse Ring */}
-                            <div 
-                                className="absolute inset-0 rounded-full border border-solid pulse-ring pointer-events-none"
-                                style={{
-                                    transform: isRunning ? `scale(${currentStyle.ringScale})` : 'scale(0.7)',
-                                    opacity: isRunning ? currentStyle.ringOpacity : 0,
-                                    borderColor: currentStyle.color.replace('0.85', '0.5'),
-                                    transitionDuration: `${transitionSecs}s`
-                                }}
-                            ></div>
+  function triggerPhaseChange(newPhase) {
+    state.currentPhase = newPhase;
+    var ratio = getActiveRatio();
 
-                            {/* Main Hero Circle */}
-                            <div 
-                                className={`absolute rounded-full flex flex-col items-center justify-center text-white hero-circle w-full h-full ${!isRunning ? 'idle-pulse' : ''}`}
-                                style={{
-                                    transform: isRunning ? `scale(${currentStyle.scale})` : 'scale(1)',
-                                    backgroundColor: isRunning ? currentStyle.color : '',
-                                    boxShadow: isRunning ? `0 0 60px ${currentStyle.shadow}` : '',
-                                    transitionDuration: isRunning ? `${transitionSecs}s` : '0s',
-                                    backdropFilter: isRunning ? 'blur(8px)' : 'none'
-                                }}
-                            >
-                                {isRunning && activeRatio[currentPhase] > 0 && (
-                                    <div 
-                                        className="text-center transition-opacity duration-300 flex flex-col items-center justify-center"
-                                        style={{ transform: `scale(${1 / currentStyle.scale})` }} 
-                                    >
-                                        <h2 className="font-serif text-3xl md:text-5xl italic tracking-wide mb-1 drop-shadow-md">{currentStyle.label}</h2>
-                                        <p className="font-sans text-xl md:text-3xl font-light tracking-wider opacity-90">{phaseTimeLeft}s</p>
-                                    </div>
-                                )}
-                                {!isRunning && !isFinished && (
-                                    <div className="text-center opacity-60">
-                                        <p className="text-sm tracking-widest uppercase">Ready</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
+    if (state.soundEnabled && ratio[newPhase] > 0) {
+      cueAudio.currentTime = 0;
+      cueAudio.play().catch(function () {});
+    }
+    if (navigator.vibrate && ratio[newPhase] > 0) {
+      navigator.vibrate(40);
+    }
+    render();
+  }
 
-                    {/* Bottom Controls */}
-                    <div className="mt-auto relative z-10 w-full pt-6">
-                        {/* Progress Bar */}
-                        {duration > 0 && (
-                            <div className="w-full bg-white/5 h-1 md:h-1.5 rounded-full overflow-hidden mb-6 md:mb-8 border border-white/5">
-                                <div 
-                                    className="h-full bg-gradient-to-r from-teal-500 to-accent transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(45,212,191,0.5)]"
-                                    style={{ width: `${progressPercent}%` }}
-                                ></div>
-                            </div>
-                        )}
+  /* ---------------- Core loop ---------------- */
+  function finishSession() {
+    state.isRunning = false;
+    ambientAudio.pause();
+    state.sessionStats = {
+      cycles: state.cyclesCompleted,
+      minutes: state.duration > 0
+        ? (state.duration / 60).toFixed(1)
+        : ((Date.now() - startTime) / 60000).toFixed(1)
+    };
+    state.isFinished = true;
+    cancelAnimationFrame(rafId);
+    render();
+  }
 
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center glass-panel p-5 md:p-6 rounded-3xl">
-                            
-                            {/* Sound Settings */}
-                            <div className="flex flex-col gap-4 order-2 md:order-1">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[11px] uppercase tracking-widest text-gray-400 font-semibold">Audio Mix</span>
-                                    <button 
-                                        onClick={() => setSoundEnabled(!soundEnabled)}
-                                        className={`w-10 h-5 md:w-12 md:h-6 rounded-full relative transition-colors duration-300 ${soundEnabled ? 'bg-accent' : 'bg-white/20'}`}
-                                    >
-                                        <div className={`w-3.5 h-3.5 md:w-4 md:h-4 bg-white rounded-full absolute top-[3px] md:top-1 transition-all duration-300 ${soundEnabled ? 'left-[22px] md:left-7' : 'left-1'}`}></div>
-                                    </button>
-                                </div>
-                                <div className={`flex flex-col gap-3 transition-opacity duration-300 ${soundEnabled ? 'opacity-100' : 'opacity-30 pointer-events-none'}`}>
-                                    <div className="flex items-center gap-3">
-                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
-                                        <input type="range" min="0" max="100" value={cueVolume} onChange={(e)=>setCueVolume(e.target.value)} className="flex-1" />
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
-                                        <input type="range" min="0" max="100" value={ambientVolume} onChange={(e)=>setAmbientVolume(e.target.value)} className="flex-1" />
-                                    </div>
-                                </div>
-                            </div>
+  function loop() {
+    if (!state.isRunning) return;
 
-                            {/* Play/Pause Central Controls */}
-                            <div className="flex items-center justify-center gap-6 order-1 md:order-2 py-4 md:py-0 border-b md:border-b-0 md:border-x border-white/5">
-                                <button 
-                                    onClick={resetSession}
-                                    className="w-12 h-12 rounded-full bg-white/5 border border-white/10 text-gray-400 flex items-center justify-center hover:bg-white/10 hover:text-white transition-all duration-300"
-                                    title="Reset"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-                                </button>
-                                
-                                <button 
-                                    onClick={toggleSession}
-                                    className={`w-16 h-16 md:w-20 md:h-20 rounded-full flex items-center justify-center transition-all duration-300 shadow-xl ${isRunning ? 'bg-white/10 text-white border border-white/20' : 'bg-gradient-to-tr from-teal-500 to-accent text-dark shadow-[0_0_30px_rgba(45,212,191,0.4)] hover:shadow-[0_0_40px_rgba(45,212,191,0.6)] hover:scale-105'}`}
-                                >
-                                    {isRunning ? (
-                                        <svg className="w-6 h-6 md:w-8 md:h-8" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd"></path></svg>
-                                    ) : (
-                                        <svg className="w-8 h-8 md:w-10 md:h-10 ml-1 md:ml-2" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd"></path></svg>
-                                    )}
-                                </button>
-                            </div>
+    var ratio = getActiveRatio();
+    var cycleDuration = getCycleDuration();
 
-                            {/* Right empty spacer for grid balance */}
-                            <div className="hidden md:block order-3 text-right">
-                                <p className="text-[10px] text-gray-500 uppercase tracking-widest">Status</p>
-                                <p className="text-sm text-gray-300 mt-1">{isRunning ? 'Session Active' : 'Ready to begin'}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+    var now = Date.now();
+    var elapsedTotal = now - startTime;
+    var elapsedSeconds = elapsedTotal / 1000;
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<AlphaHarmonizer />);
-    </script>
+    if (state.duration > 0 && elapsedSeconds >= state.duration) {
+      finishSession();
+      return;
+    }
+
+    var currentCycleSeconds = elapsedSeconds % cycleDuration;
+    var completed = Math.floor(elapsedSeconds / cycleDuration);
+
+    if (completed !== state.cyclesCompleted) state.cyclesCompleted = completed;
+    if (state.duration > 0) state.sessionTimeLeft = Math.max(0, Math.ceil(state.duration - elapsedSeconds));
+
+    var phaseAcc = 0;
+    var activePhase = 'inhale';
+    var timeLeftInPhase = 0;
+
+    for (var i = 0; i < PHASE_ORDER.length; i++) {
+      var p = PHASE_ORDER[i];
+      if (currentCycleSeconds < phaseAcc + ratio[p]) {
+        activePhase = p;
+        timeLeftInPhase = (phaseAcc + ratio[p]) - currentCycleSeconds;
+        break;
+      }
+      phaseAcc += ratio[p];
+    }
+
+    state.phaseTimeLeft = Math.ceil(timeLeftInPhase);
+
+    var phaseChanged = activePhase !== state.currentPhase;
+    if (phaseChanged) {
+      triggerPhaseChange(activePhase);
+    } else {
+      renderTimers();
+    }
+
+    rafId = requestAnimationFrame(loop);
+  }
+
+  /* ---------------- Actions ---------------- */
+  function toggleSession() {
+    unlockAudio();
+    var ratio = getActiveRatio();
+    var cycleDuration = getCycleDuration();
+
+    if (!state.isRunning) {
+      if (state.isFinished) resetSession();
+
+      startTime = Date.now() - (state.cyclesCompleted * cycleDuration * 1000) - ((cycleDuration - state.phaseTimeLeft) * 1000);
+      if (state.cyclesCompleted === 0 && state.phaseTimeLeft === 0) {
+        startTime = Date.now();
+        state.isRunning = true;
+        triggerPhaseChange('inhale');
+      } else {
+        state.isRunning = true;
+      }
+
+      if (state.soundEnabled) ambientAudio.play().catch(function () {});
+      rafId = requestAnimationFrame(loop);
+    } else {
+      state.isRunning = false;
+      ambientAudio.pause();
+      cancelAnimationFrame(rafId);
+    }
+    render();
+  }
+
+  function resetSession() {
+    state.isRunning = false;
+    state.isFinished = false;
+    state.cyclesCompleted = 0;
+    state.sessionTimeLeft = state.duration;
+    state.currentPhase = 'inhale';
+    var ratio = getActiveRatio();
+    state.phaseTimeLeft = ratio.inhale;
+    ambientAudio.pause();
+    ambientAudio.currentTime = 0;
+    cancelAnimationFrame(rafId);
+    render();
+  }
+
+  /* ---------------- Rendering ---------------- */
+  function buildChips() {
+    el.presetChips.innerHTML = '';
+    PRESET_ORDER.forEach(function (key) {
+      var btn = document.createElement('button');
+      btn.className = 'chip' + (state.selectedPreset === key ? ' active' : '');
+      btn.textContent = PRESETS[key].label;
+      btn.addEventListener('click', function () {
+        state.selectedPreset = key;
+        resetSession();
+        buildChips();
+        renderRatioPanel();
+      });
+      el.presetChips.appendChild(btn);
+    });
+
+    el.durationChips.innerHTML = '';
+    DURATIONS.forEach(function (d) {
+      var btn = document.createElement('button');
+      btn.className = 'chip' + (state.duration === d.val ? ' active' : '');
+      btn.textContent = d.label;
+      btn.addEventListener('click', function () {
+        state.duration = d.val;
+        resetSession();
+        buildChips();
+      });
+      el.durationChips.appendChild(btn);
+    });
+  }
+
+  function renderRatioPanel() {
+    var ratio = getActiveRatio();
+    el.ratioDisplay.textContent = ratio.inhale + ':' + ratio.holdIn + ':' + ratio.exhale + ':' + ratio.holdOut;
+    el.customGrid.style.display = state.selectedPreset === 'custom' ? 'grid' : 'none';
+    if (state.selectedPreset === 'custom') {
+      el.customInhale.value = state.customRatio.inhale;
+      el.customHoldIn.value = state.customRatio.holdIn;
+      el.customExhale.value = state.customRatio.exhale;
+      el.customHoldOut.value = state.customRatio.holdOut;
+    }
+  }
+
+  function renderTimers() {
+    el.remainingTime.textContent = state.duration === 0 ? '∞' : formatTime(state.sessionTimeLeft);
+    el.cyclesDone.textContent = state.cyclesCompleted;
+
+    var progressPercent = state.duration > 0
+      ? Math.min(100, ((state.duration - state.sessionTimeLeft) / state.duration) * 100)
+      : 100;
+    el.progressFill.style.width = progressPercent + '%';
+    el.progressTrack.style.display = state.duration > 0 ? 'block' : 'none';
+
+    var ratio = getActiveRatio();
+    var style = state.isRunning ? PHASE_CONFIG[state.currentPhase] : PHASE_CONFIG.inhale;
+    var transitionSecs = state.isRunning ? ratio[state.currentPhase] : 1;
+
+    // Hero circle
+    if (state.isRunning) {
+      el.heroCircle.classList.remove('idle-pulse');
+      el.heroCircle.style.transform = 'scale(' + style.scale + ')';
+      el.heroCircle.style.backgroundColor = style.color;
+      el.heroCircle.style.boxShadow = '0 0 60px ' + style.shadow;
+      el.heroCircle.style.transitionDuration = transitionSecs + 's';
+      el.heroCircle.style.backdropFilter = 'blur(8px)';
+    } else {
+      el.heroCircle.classList.add('idle-pulse');
+      el.heroCircle.style.transform = 'scale(1)';
+      el.heroCircle.style.backgroundColor = '';
+      el.heroCircle.style.boxShadow = '';
+      el.heroCircle.style.transitionDuration = '0s';
+      el.heroCircle.style.backdropFilter = 'none';
+    }
+
+    // Rings
+    var ringColorTransparent = style.color.replace('0.85', '0');
+    var ringColorSoft = style.color.replace('0.85', '0.2');
+    var ringColorBorder = style.color.replace('0.85', '0.5');
+
+    el.ringOuter.style.transform = state.isRunning ? 'scale(' + (style.ringScale + 0.1) + ')' : 'scale(0.8)';
+    el.ringOuter.style.opacity = state.isRunning ? (style.ringOpacity * 0.5) : 0;
+    el.ringOuter.style.background = 'radial-gradient(circle, ' + ringColorTransparent + ' 40%, ' + ringColorSoft + ' 100%)';
+    el.ringOuter.style.transitionDuration = transitionSecs + 's';
+
+    el.ringInner.style.transform = state.isRunning ? 'scale(' + style.ringScale + ')' : 'scale(0.7)';
+    el.ringInner.style.opacity = state.isRunning ? style.ringOpacity : 0;
+    el.ringInner.style.borderColor = ringColorBorder;
+    el.ringInner.style.transitionDuration = transitionSecs + 's';
+
+    // Hero text
+    if (state.isRunning && ratio[state.currentPhase] > 0) {
+      el.readyText.style.display = 'none';
+      el.phaseText.style.display = 'flex';
+      el.phaseText.style.transform = 'scale(' + (1 / style.scale) + ')';
+      el.phaseLabel.textContent = style.label;
+      el.phaseTime.textContent = state.phaseTimeLeft + 's';
+    } else if (!state.isRunning && !state.isFinished) {
+      el.readyText.style.display = 'block';
+      el.phaseText.style.display = 'none';
+    } else {
+      el.readyText.style.display = 'none';
+      el.phaseText.style.display = 'none';
+    }
+
+    el.statusText.textContent = state.isRunning ? 'Session Active' : 'Ready to begin';
+  }
+
+  function renderPlayButton() {
+    if (state.isRunning) {
+      el.playBtn.classList.remove('idle');
+      el.playBtn.classList.add('running');
+      el.playIcon.outerHTML = ICON_PAUSE;
+    } else {
+      el.playBtn.classList.remove('running');
+      el.playBtn.classList.add('idle');
+      el.playIcon.outerHTML = ICON_PLAY;
+    }
+    el.playIcon = document.getElementById('playIcon');
+  }
+
+  function renderFinished() {
+    if (state.isFinished) {
+      el.statCycles.textContent = state.sessionStats.cycles;
+      el.statMinutes.textContent = state.sessionStats.minutes;
+      el.finishedOverlay.classList.add('show');
+    } else {
+      el.finishedOverlay.classList.remove('show');
+    }
+  }
+
+  function renderAudioPanel() {
+    if (state.soundEnabled) {
+      el.soundToggle.classList.add('on');
+      el.volumeControls.classList.remove('disabled');
+    } else {
+      el.soundToggle.classList.remove('on');
+      el.volumeControls.classList.add('disabled');
+    }
+    el.cueVolume.value = state.cueVolume;
+    el.ambientVolume.value = state.ambientVolume;
+  }
+
+  function render() {
+    renderTimers();
+    renderPlayButton();
+    renderFinished();
+    renderAudioPanel();
+  }
+
+  /* ---------------- Event wiring ---------------- */
+  el.playBtn.addEventListener('click', toggleSession);
+  el.resetBtn.addEventListener('click', resetSession);
+  el.beginAnewBtn.addEventListener('click', resetSession);
+
+  el.soundToggle.addEventListener('click', function () {
+    state.soundEnabled = !state.soundEnabled;
+    applyVolumes();
+    renderAudioPanel();
+  });
+
+  el.cueVolume.addEventListener('input', function (e) {
+    state.cueVolume = parseInt(e.target.value, 10);
+    applyVolumes();
+  });
+  el.ambientVolume.addEventListener('input', function (e) {
+    state.ambientVolume = parseInt(e.target.value, 10);
+    applyVolumes();
+  });
+
+  function wireCustomInput(inputEl, phaseKey) {
+    inputEl.addEventListener('change', function (e) {
+      var val = clamp(parseInt(e.target.value, 10) || 0, 0, 12);
+      state.customRatio[phaseKey] = val;
+      resetSession();
+      renderRatioPanel();
+    });
+  }
+  wireCustomInput(el.customInhale, 'inhale');
+  wireCustomInput(el.customHoldIn, 'holdIn');
+  wireCustomInput(el.customExhale, 'exhale');
+  wireCustomInput(el.customHoldOut, 'holdOut');
+
+  /* ---------------- Init ---------------- */
+  applyVolumes();
+  buildChips();
+  renderRatioPanel();
+  state.sessionTimeLeft = state.duration;
+  state.phaseTimeLeft = getActiveRatio().inhale;
+  render();
+
+  window.addEventListener('beforeunload', function () {
+    ambientAudio.pause();
+    cueAudio.pause();
+    cancelAnimationFrame(rafId);
+  });
+})();
+</script>
 </body>
 </html>
